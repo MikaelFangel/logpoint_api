@@ -42,7 +42,7 @@ defmodule LogpointApi.SearchApi do
     options = [ssl: [{:verify, :verify_none}]]
 
     case HTTPoison.post(url, payload, headers, options) do
-      {:ok, %HTTPoison.Response{status_code: 200}, body: body} ->
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         body 
         |> Jason.decode!()
 
