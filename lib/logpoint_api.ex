@@ -75,7 +75,7 @@ defmodule LogpointApi.IncidentApi do
     options = [ssl: [{:verify, :verify_none}]]
 
     case HTTPoison.request(:get, url, body, headers, options) do
-      {:ok, %HTTPoison.Response{status_code: 200}, body: body} ->
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         body 
         |> Jason.decode!()
 
