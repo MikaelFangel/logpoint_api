@@ -45,16 +45,11 @@ defmodule LogpointApi.SearchApi do
   def get_livesearches(ip, username, secret_key),
     do: get_allowed_data(ip, username, secret_key, "livesearches")
 
-  def get_search_logs(ip, username, secret_key, request_data) do
-    payload =
-      URI.encode_query(%{
-        "username" => username,
-        "secret_key" => secret_key,
-        "requestData" => request_data |> Jason.encode!()
-      })
+  def get_search_id(ip, username, secret, %Query{} = request_data),
+    do: get_search_logs(ip, username, secret, request_data)
 
-    make_request(ip, "/getsearchlogs", payload)
-  end
+  def get_search_result(ip, username, secret, %SearchID{} = request_data),
+    do: get_search_logs(ip, username, secret, request_data)
 
   defp make_request(ip, path, payload) do
     url = "https://" <> ip <> path
@@ -84,6 +79,17 @@ defmodule LogpointApi.SearchApi do
       })
 
     make_request(ip, "/getalloweddata", payload)
+  end
+
+  defp get_search_logs(ip, username, secret_key, request_data) do
+    payload =
+      URI.encode_query(%{
+        "username" => username,
+        "secret_key" => secret_key,
+        "requestData" => request_data |> Jason.encode!()
+      })
+
+    make_request(ip, "/getsearchlogs", payload)
   end
 end
 
