@@ -20,6 +20,16 @@ end
 defmodule LogpointApi.SearchApi do
   @allowed_types ["user_preference", "loginspects", "Logpoint_repos", "devices", "livesearches"]
 
+  defmodule Query do
+    @derive {Jason.Encoder, only: [:query, :time_range, :limit, :repos]}
+    defstruct [:query, :time_range, :limit, :repos]
+  end
+
+  defmodule SearchID do
+    @derive {Jason.Encoder, only: [:search_id]}
+    defstruct [:search_id]
+  end
+
   def get_user_timezone(ip, username, secret_key),
     do: get_allowed_data(ip, username, secret_key, "user_preference")
 
@@ -34,6 +44,17 @@ defmodule LogpointApi.SearchApi do
 
   def get_livesearches(ip, username, secret_key),
     do: get_allowed_data(ip, username, secret_key, "livesearches")
+
+  def get_search_logs(ip, username, secret_key, request_data) do
+    payload =
+      URI.encode_query(%{
+        "username" => username,
+        "secret_key" => secret_key,
+        "requestData" => request_data |> Jason.encode!()
+      })
+
+    make_request(ip, "/getsearchlogs", payload)
+  end
 
   defp make_request(ip, path, payload) do
     url = "https://" <> ip <> path
