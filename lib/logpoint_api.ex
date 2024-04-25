@@ -17,25 +17,25 @@ defmodule LogpointApi do
   end
 end
 
-defmodule LogpointApi.SearchApi do 
+defmodule LogpointApi.SearchApi do
   @allowed_types ["user_preference", "loginspects", "Logpoint_repos", "devices", "livesearches"]
 
-  def get_user_timezone(ip, username, secret_key), do: 
-    get_allowed_data(ip, username, secret_key, "user_preference")
+  def get_user_timezone(ip, username, secret_key),
+    do: get_allowed_data(ip, username, secret_key, "user_preference")
 
-  def get_logpoints(ip, username, secret_key), do:
-    get_allowed_data(ip, username, secret_key, "loginspects")
+  def get_logpoints(ip, username, secret_key),
+    do: get_allowed_data(ip, username, secret_key, "loginspects")
 
-  def get_repos(ip, username, secret_key), do:
-    get_allowed_data(ip, username, secret_key, "Logpoint_repos")
+  def get_repos(ip, username, secret_key),
+    do: get_allowed_data(ip, username, secret_key, "Logpoint_repos")
 
-  def get_devices(ip, username, secret_key), do:
-    get_allowed_data(ip, username, secret_key, "devices")
+  def get_devices(ip, username, secret_key),
+    do: get_allowed_data(ip, username, secret_key, "devices")
 
-  def get_livesearches(ip, username, secret_key), do:
-    get_allowed_data(ip, username, secret_key, "livesearches")
+  def get_livesearches(ip, username, secret_key),
+    do: get_allowed_data(ip, username, secret_key, "livesearches")
 
-  defp make_request(ip, path, payload) do 
+  defp make_request(ip, path, payload) do
     url = "https://" <> ip <> path
     headers = [{"Content-Type", "application/x-www-form-urlencoded"}]
     # On-prem uses self signed certificates and we thus need to disable the verification.
@@ -43,7 +43,7 @@ defmodule LogpointApi.SearchApi do
 
     case HTTPoison.post(url, payload, headers, options) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        body 
+        body
         |> Jason.decode!()
 
       {:ok, %HTTPoison.Response{status_code: status_code}} ->
@@ -55,19 +55,19 @@ defmodule LogpointApi.SearchApi do
   end
 
   defp get_allowed_data(ip, username, secret_key, type) when type in @allowed_types do
-    payload = 
+    payload =
       URI.encode_query(%{
         "username" => username,
         "secret_key" => secret_key,
         "type" => type
       })
 
-      make_request(ip, "/getalloweddata", payload)
+    make_request(ip, "/getalloweddata", payload)
   end
 end
 
 defmodule LogpointApi.IncidentApi do
-  defp make_request(ip, path, params) do 
+  defp make_request(ip, path, params) do
     url = "https://" <> ip <> path
     headers = [{"Content-Type", "application/json"}]
     body = Jason.encode!(params)
@@ -76,7 +76,7 @@ defmodule LogpointApi.IncidentApi do
 
     case HTTPoison.request(:get, url, body, headers, options) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        body 
+        body
         |> Jason.decode!()
 
       {:ok, %HTTPoison.Response{status_code: status_code}} ->
