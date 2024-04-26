@@ -1,6 +1,6 @@
 # LogpointApi
 
-**TODO: Add description**
+Elixir library implementing the [Logpoint API reference](https://docs.logpoint.com/docs/logpoint-api-reference/en/latest/index.html).
 
 ## Installation
 
