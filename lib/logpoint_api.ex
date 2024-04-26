@@ -1,23 +1,12 @@
 defmodule LogpointApi do
-  @moduledoc """
-  Documentation for `LogpointApi`.
-  """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> LogpointApi.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  defmodule Credential do
+    defstruct [:username, :secret_key]
   end
 end
 
 defmodule LogpointApi.SearchApi do
+  alias LogpointApi.Credential, as: Credential
+
   @allowed_types ["user_preference", "loginspects", "Logpoint_repos", "devices", "livesearches"]
 
   defmodule Query do
@@ -30,26 +19,26 @@ defmodule LogpointApi.SearchApi do
     defstruct [:search_id]
   end
 
-  def get_user_timezone(ip, username, secret_key),
-    do: get_allowed_data(ip, username, secret_key, "user_preference")
+  def get_user_timezone(ip, %Credential{} = credential),
+    do: get_allowed_data(ip, %Credential{} = credential, "user_preference")
 
-  def get_logpoints(ip, username, secret_key),
-    do: get_allowed_data(ip, username, secret_key, "loginspects")
+  def get_logpoints(ip, %Credential{} = credential),
+    do: get_allowed_data(ip, %Credential{} = credential, "loginspects")
 
-  def get_repos(ip, username, secret_key),
-    do: get_allowed_data(ip, username, secret_key, "Logpoint_repos")
+  def get_repos(ip, %Credential{} = credential),
+    do: get_allowed_data(ip, %Credential{} = credential, "Logpoint_repos")
 
-  def get_devices(ip, username, secret_key),
-    do: get_allowed_data(ip, username, secret_key, "devices")
+  def get_devices(ip, %Credential{} = credential),
+    do: get_allowed_data(ip, %Credential{} = credential, "devices")
 
-  def get_livesearches(ip, username, secret_key),
-    do: get_allowed_data(ip, username, secret_key, "livesearches")
+  def get_livesearches(ip, %Credential{} = credential),
+    do: get_allowed_data(ip, %Credential{} = credential, "livesearches")
 
-  def get_search_id(ip, username, secret, %Query{} = request_data),
-    do: get_search_logs(ip, username, secret, request_data)
+  def get_search_id(ip, %Credential{} = credential, %Query{} = request_data),
+    do: get_search_logs(ip, %Credential{} = credential, request_data)
 
-  def get_search_result(ip, username, secret, %SearchID{} = request_data),
-    do: get_search_logs(ip, username, secret, request_data)
+  def get_search_result(ip, %Credential{} = credential, %SearchID{} = request_data),
+    do: get_search_logs(ip, %Credential{} = credential, request_data)
 
   defp make_request(ip, path, payload) do
     url = "https://" <> ip <> path
@@ -70,22 +59,22 @@ defmodule LogpointApi.SearchApi do
     end
   end
 
-  defp get_allowed_data(ip, username, secret_key, type) when type in @allowed_types do
+  defp get_allowed_data(ip, %Credential{} = credential, type) when type in @allowed_types do
     payload =
       URI.encode_query(%{
-        "username" => username,
-        "secret_key" => secret_key,
+        "username" => credential.username,
+        "secret_key" => credential.secret_key,
         "type" => type
       })
 
     make_request(ip, "/getalloweddata", payload)
   end
 
-  defp get_search_logs(ip, username, secret_key, request_data) do
+  defp get_search_logs(ip, %Credential{} = credential, request_data) do
     payload =
       URI.encode_query(%{
-        "username" => username,
-        "secret_key" => secret_key,
+        "username" => credential.username,
+        "secret_key" => credential.secret_key,
         "requestData" => request_data |> Jason.encode!()
       })
 
