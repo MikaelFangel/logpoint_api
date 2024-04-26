@@ -16,7 +16,7 @@ defmodule LogpointApi.IncidentApi do
   end
 
   def get_data_from_incident(ip, %Credential{} = credential, %Incident{} = incident) do
-    get_incident_information(ip, "get_data_from_incident", credential, incident)
+    get_incident_information(ip, "/get_data_from_incident", credential, incident)
   end
 
   defp get_incident_information(ip, path, %Credential{} = credential, request_data) do
