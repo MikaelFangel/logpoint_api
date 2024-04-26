@@ -23,6 +23,15 @@ defmodule LogpointApi.IncidentApi do
     get_incident_information(ip, "/incident_states", credential, request_data)
   end
 
+  def get_users(ip, %Credential{} = credential) do
+    params = %{
+      "username" => credential.username,
+      "secret_key" => credential.secret_key
+    }
+
+    make_request(ip, "/get_users", params)
+  end
+
   defp get_incident_information(ip, path, %Credential{} = credential, request_data) do
     params = %{
       "username" => credential.username,
