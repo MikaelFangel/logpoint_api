@@ -11,17 +11,14 @@ defmodule LogpointApi.IncidentApi do
     defstruct [:incident_obj_id, :incident_id]
   end
 
-  def get_incidents(ip, %Credential{} = credential, %TimePeriod{} = request_data) do
-    get_incident_information(ip, "/incidents", credential, request_data)
-  end
+  def get_incidents(ip, %Credential{} = credential, %TimePeriod{} = request_data),
+    do: get_incident_information(ip, "/incidents", credential, request_data)
 
-  def get_data_from_incident(ip, %Credential{} = credential, %Incident{} = incident) do
-    get_incident_information(ip, "/get_data_from_incident", credential, incident)
-  end
+  def get_data_from_incident(ip, %Credential{} = credential, %Incident{} = incident),
+    do: get_incident_information(ip, "/get_data_from_incident", credential, incident)
 
-  def get_incident_states(ip, %Credential{} = credential, %TimePeriod{} = request_data) do
-    get_incident_information(ip, "/incident_states", credential, request_data)
-  end
+  def get_incident_states(ip, %Credential{} = credential, %TimePeriod{} = request_data),
+    do: get_incident_information(ip, "/incident_states", credential, request_data)
 
   def get_users(ip, %Credential{} = credential) do
     params = %{
