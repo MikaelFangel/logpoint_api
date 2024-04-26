@@ -12,10 +12,12 @@ defmodule LogpointApi.IncidentApi do
   end
 
   defmodule IncidentComment do
+    @derive {Jason.Encoder, only: [:_id, :comments]}
     defstruct _id: "", comments: []
   end
 
   defmodule IncidentCommentData do
+    @derive {Jason.Encoder, only: [:version, :states]}
     defstruct version: "0.1", states: [%IncidentComment{}]
   end
 
