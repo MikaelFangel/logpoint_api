@@ -1,4 +1,27 @@
 defmodule LogpointApi.SearchApi do
+  @moduledoc """
+  This module provides an implementation of the Logpoint search API.
+
+  ## Modules
+
+   - `Query` : A struct used to represent a search query.
+   - `SearchID` : A struct used to represent a search ID.
+
+  ## Constants
+
+   - `@allowed_types` : A list of allowed types for data retrieval.
+
+  ## Public Functions
+
+   - `get_user_timezone/2` : Retrieves user timezone data.
+   - `get_logpoints/2` : Retrieves logpoints data.
+   - `get_repos/2` : Retrieves repositories data.
+   - `get_devices/2` : Retrieves devices data.
+   - `get_livesearches/2` : Retrieves live searches data.
+   - `get_search_id/3` : Creates a search in Logpoint and returns the JSON object.
+   - `get_search_result/3` : Retrieves search results for a given search ID.
+  """
+
   alias LogpointApi.Credential, as: Credential
 
   @allowed_types ["user_preference", "loginspects", "Logpoint_repos", "devices", "livesearches"]
