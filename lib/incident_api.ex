@@ -56,12 +56,20 @@ defmodule LogpointApi.IncidentApi do
   def add_comments(ip, credential, %IncidentCommentData{} = incident_comment_data),
     do: update_incident_state(ip, "/add_incident_comment", credential, incident_comment_data)
 
+  @spec assign_incidents(String.t(), Credential.t(), IncidentIDs.t(), String.t()) ::
+          {:ok, map()} | {:error, String.t()}
+  def assign_incidents(ip, credential, %IncidentIDs{} = incident_ids, assignee_id) do
+    payload = Map.put(incident_ids, :new_assignee, assignee_id)
+    update_incident_state(ip, "/assign_incident", credential, payload)
+  end
+
   @spec resolve_incidents(String.t(), Credential.t(), IncidentIDs.t()) ::
           {:ok, map()} | {:error, String.t()}
   def resolve_incidents(ip, credential, %IncidentIDs{} = incident_ids),
     do: update_incident_state(ip, "/resolve_incident", credential, incident_ids)
 
-  @spec update_incident_state(String.t(), String.t(), Credential.t(), map()) :: {:ok, map()} | {:error, String.t()}
+  @spec update_incident_state(String.t(), String.t(), Credential.t(), map()) ::
+          {:ok, map()} | {:error, String.t()}
   defp update_incident_state(ip, path, %Credential{} = credential, request_data) do
     payload = %{
       "username" => credential.username,
