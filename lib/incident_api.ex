@@ -21,6 +21,11 @@ defmodule LogpointApi.IncidentApi do
     defstruct version: "0.1", states: [%IncidentComment{}]
   end
 
+  defmodule IncidentIDs do
+    @derive {Jason.Encoder, only: [:version, :incident_ids]}
+    defstruct version: "0.1", incident_ids: []
+  end
+
   @spec get_incidents(String.t(), Credential.t(), TimeRange.t()) ::
           {:ok, map()} | {:error, String.t()}
   def get_incidents(ip, credential, %TimeRange{} = time_range),
@@ -48,15 +53,23 @@ defmodule LogpointApi.IncidentApi do
 
   @spec add_comments(String.t(), Credential.t(), IncidentCommentData.t()) ::
           {:ok, map()} | {:error, String.t()}
-  def add_comments(ip, %Credential{} = credential, %IncidentCommentData{} = request_data) do
-    payload =
-      %{
-        "username" => credential.username,
-        "secret_key" => credential.secret_key,
-        "requestData" => request_data
-      }
+  def add_comments(ip, credential, %IncidentCommentData{} = incident_comment_data),
+    do: update_incident_state(ip, "/add_incident_comment", credential, incident_comment_data)
 
-    make_request(ip, "/add_incident_comment", :post, payload)
+  @spec resolve_incidents(String.t(), Credential.t(), IncidentIDs.t()) ::
+          {:ok, map()} | {:error, String.t()}
+  def resolve_incidents(ip, credential, %IncidentIDs{} = incident_ids),
+    do: update_incident_state(ip, "/resolve_incident", credential, incident_ids)
+
+  @spec update_incident_state(String.t(), String.t(), Credential.t(), map()) :: {:ok, map()} | {:error, String.t()}
+  defp update_incident_state(ip, path, %Credential{} = credential, request_data) do
+    payload = %{
+      "username" => credential.username,
+      "secret_key" => credential.secret_key,
+      "requestData" => request_data
+    }
+
+    make_request(ip, path, :post, payload)
   end
 
   @spec get_incident_information(String.t(), String.t(), Credential.t(), map()) ::
