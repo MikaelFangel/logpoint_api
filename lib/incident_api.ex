@@ -43,60 +43,43 @@ defmodule LogpointApi.IncidentApi do
       "secret_key" => credential.secret_key
     }
 
-    make_request(ip, "/get_users", params)
+    make_request(ip, "/get_users", :get, params)
   end
 
-  @spec add_comments(String.t(), Credential.t(), IncidentCommentData.t()) :: {:ok, map()} | {:error, String.t()} 
+  @spec add_comments(String.t(), Credential.t(), IncidentCommentData.t()) ::
+          {:ok, map()} | {:error, String.t()}
   def add_comments(ip, %Credential{} = credential, %IncidentCommentData{} = request_data) do
-    payload = %{
-      "username" => credential.username,
-      "secret_key" => credential.secret_key,
-      "requestData" => request_data
-    } |> Jason.encode!()
+    payload =
+      %{
+        "username" => credential.username,
+        "secret_key" => credential.secret_key,
+        "requestData" => request_data
+      }
 
-    post_request(ip, "/add_incident_comment", payload)
+    make_request(ip, "/add_incident_comment", :post, payload)
   end
 
   @spec get_incident_information(String.t(), String.t(), Credential.t(), map()) ::
           {:ok, map()} | {:error, String.t()}
   defp get_incident_information(ip, path, %Credential{} = credential, request_data) do
-    params = %{
+    payload = %{
       "username" => credential.username,
       "secret_key" => credential.secret_key,
       "requestData" => request_data
     }
 
-    make_request(ip, path, params)
+    make_request(ip, path, :get, payload)
   end
 
-  @spec make_request(String.t(), String.t(), map()) :: {:ok, map()} | {:error, String.t()}
-  defp make_request(ip, path, params) do
+  @spec make_request(String.t(), String.t(), atom(), map()) :: {:ok, map()} | {:error, String.t()}
+  defp make_request(ip, path, method, payload) do
     url = build_url(ip, path)
     headers = [{"Content-Type", "application/json"}]
-    body = Jason.encode!(params)
+    body = Jason.encode!(payload)
     # On-prem uses self signed certificates and we thus need to disable the verification.
     options = [ssl: [{:verify, :verify_none}]]
 
-    case HTTPoison.request(:get, url, body, headers, options) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, Jason.decode!(body)}
-
-      {:ok, %HTTPoison.Response{status_code: status_code}} ->
-        {:error, "Received response with status code #{status_code}"}
-
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, "HTTP request failed with reason: #{reason}"}
-    end
-  end
-
-  @spec post_request(String.t(), String.t(), String.t()) :: {:ok, map()} | {:error, String.t()}
-  defp post_request(ip, path, payload) do
-    url = build_url(ip, path)
-    headers = [{"Content-Type", "application/json"}]
-    # On-prem uses self signed certificates and we thus need to disable the verification.
-    options = [ssl: [{:verify, :verify_none}]]
-
-    case HTTPoison.post(url, payload, headers, options) do
+    case HTTPoison.request(method, url, body, headers, options) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         {:ok, Jason.decode!(body)}
 
