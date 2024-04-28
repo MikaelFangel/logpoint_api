@@ -68,6 +68,16 @@ defmodule LogpointApi.IncidentApi do
   def resolve_incidents(ip, credential, %IncidentIDs{} = incident_ids),
     do: update_incident_state(ip, "/resolve_incident", credential, incident_ids)
 
+  @spec reopen_incidents(String.t(), Credential.t(), IncidentIDs.t()) ::
+          {:ok, map()} | {:error, String.t()}
+  def reopen_incidents(ip, credential, %IncidentIDs{} = incident_ids),
+    do: update_incident_state(ip, "/reopen_incident", credential, incident_ids)
+
+  @spec close_incidents(String.t(), Credential.t(), IncidentIDs.t()) ::
+          {:ok, map()} | {:error, String.t()}
+  def close_incidents(ip, credential, %IncidentIDs{} = incident_ids),
+    do: update_incident_state(ip, "/close_incident", credential, incident_ids)
+
   @spec update_incident_state(String.t(), String.t(), Credential.t(), map()) ::
           {:ok, map()} | {:error, String.t()}
   defp update_incident_state(ip, path, %Credential{} = credential, request_data) do
