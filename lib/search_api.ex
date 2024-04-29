@@ -24,7 +24,7 @@ defmodule LogpointApi.SearchApi do
 
   alias LogpointApi.Credential, as: Credential
 
-  @allowed_types ["user_preference", "loginspects", "Logpoint_repos", "devices", "livesearches"]
+  @allowed_types ["user_preference", "loginspects", "logpoint_repos", "devices", "livesearches"]
 
   defmodule Query do
     @derive {Jason.Encoder, only: [:query, :time_range, :limit, :repos]}
@@ -46,7 +46,7 @@ defmodule LogpointApi.SearchApi do
 
   @spec get_repos(String.t(), Credential.t()) :: {:ok, map()} | {:error, String.t()}
   def get_repos(ip, credential),
-    do: get_allowed_data(ip, credential, "Logpoint_repos")
+    do: get_allowed_data(ip, credential, "logpoint_repos")
 
   @spec get_devices(String.t(), Credential.t()) :: {:ok, map()} | {:error, String.t()}
   def get_devices(ip, credential),
@@ -71,7 +71,7 @@ defmodule LogpointApi.SearchApi do
     url = build_url(ip, path)
     headers = [{"Content-Type", "application/x-www-form-urlencoded"}]
     # On-prem uses self signed certificates and we thus need to disable the verification.
-    options = [ssl: [{:verify, :verify_none}]]
+    options = [ssl: [{:verify, :verify_none}], recv_timeout: :infinity]
 
     case HTTPoison.post(url, payload, headers, options) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
