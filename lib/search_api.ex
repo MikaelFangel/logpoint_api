@@ -22,7 +22,8 @@ defmodule LogpointApi.SearchApi do
    - `get_search_result/3` : Retrieves search results for a given search ID.
   """
 
-  alias LogpointApi.Credential, as: Credential
+  alias LogpointApi.Credential
+  alias LogpointApi.SearchApi.{Query, SearchID}
 
   @allowed_types ["user_preference", "loginspects", "logpoint_repos", "devices", "livesearches"]
 
@@ -88,13 +89,13 @@ defmodule LogpointApi.SearchApi do
   @spec build_url(String.t(), String.t()) :: String.t()
   defp build_url(ip, path), do: "https://" <> ip <> path
 
-  @spec get_allowed_data(String.t(), Credential.t(), String.t()) :: {:ok, map()} | {:error, String.t()} 
+  @spec get_allowed_data(String.t(), Credential.t(), String.t()) :: {:ok, map()} | {:error, String.t()}
   defp get_allowed_data(ip, credential, type) when type in @allowed_types do
     payload = build_payload(credential, %{"type" => type})
     make_request(ip, "/getalloweddata", payload)
   end
 
-  @spec get_search_logs(String.t(), Credential.t(), map()) :: {:ok, map()} | {:error, String.t()} 
+  @spec get_search_logs(String.t(), Credential.t(), map()) :: {:ok, map()} | {:error, String.t()}
   defp get_search_logs(ip, credential, request_data) do
     payload = build_payload(credential, %{"requestData" => Jason.encode!(request_data)})
     make_request(ip, "/getsearchlogs", payload)

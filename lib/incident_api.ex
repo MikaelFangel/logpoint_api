@@ -1,5 +1,6 @@
 defmodule LogpointApi.IncidentApi do
-  alias LogpointApi.Credential, as: Credential
+  alias LogpointApi.Credential
+  alias LogpointApi.IncidentApi.{Incident, IncidentComment, IncidentCommentData, IncidentIDs, TimeRange}
 
   defmodule TimeRange do
     @derive {Jason.Encoder, only: [:version, :ts_from, :ts_to]}
@@ -42,13 +43,9 @@ defmodule LogpointApi.IncidentApi do
     do: get_incident_information(ip, "/incident_states", credential, time_range)
 
   @spec get_users(String.t(), Credential.t()) :: {:ok, map()} | {:error, String.t()}
-  def get_users(ip, %Credential{} = credential) do
-    params = %{
-      "username" => credential.username,
-      "secret_key" => credential.secret_key
-    }
-
-    make_request(ip, "/get_users", :get, params)
+  def get_users(ip, credential) do
+    payload = make_payload(credential)
+    make_request(ip, "/get_users", :get, payload)
   end
 
   @spec add_comments(String.t(), Credential.t(), IncidentCommentData.t()) ::
@@ -80,37 +77,26 @@ defmodule LogpointApi.IncidentApi do
 
   @spec update_incident_state(String.t(), String.t(), Credential.t(), map()) ::
           {:ok, map()} | {:error, String.t()}
-  defp update_incident_state(ip, path, %Credential{} = credential, request_data) do
-    payload = %{
-      "username" => credential.username,
-      "secret_key" => credential.secret_key,
-      "requestData" => request_data
-    }
-
+  defp update_incident_state(ip, path, credential, request_data) do
+    payload = make_payload(credential, request_data)
     make_request(ip, path, :post, payload)
   end
 
   @spec get_incident_information(String.t(), String.t(), Credential.t(), map()) ::
           {:ok, map()} | {:error, String.t()}
-  defp get_incident_information(ip, path, %Credential{} = credential, request_data) do
-    payload = %{
-      "username" => credential.username,
-      "secret_key" => credential.secret_key,
-      "requestData" => request_data
-    }
-
+  defp get_incident_information(ip, path, credential, request_data) do
+    payload = make_payload(credential, request_data)
     make_request(ip, path, :get, payload)
   end
 
-  @spec make_request(String.t(), String.t(), atom(), map()) :: {:ok, map()} | {:error, String.t()}
+  @spec make_request(String.t(), String.t(), atom(), String.t()) :: {:ok, map()} | {:error, String.t()}
   defp make_request(ip, path, method, payload) do
     url = build_url(ip, path)
     headers = [{"Content-Type", "application/json"}]
-    body = Jason.encode!(payload)
     # On-prem uses self signed certificates and we thus need to disable the verification.
     options = [ssl: [{:verify, :verify_none}]]
 
-    case HTTPoison.request(method, url, body, headers, options) do
+    case HTTPoison.request(method, url, payload, headers, options) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         {:ok, Jason.decode!(body)}
 
@@ -124,4 +110,23 @@ defmodule LogpointApi.IncidentApi do
 
   @spec build_url(String.t(), String.t()) :: String.t()
   defp build_url(ip, path), do: "https://" <> ip <> path
+
+  @spec make_payload(Credential.t(), map()) :: String.t()
+  defp make_payload(%Credential{} = credential, request_data) do
+    %{
+      "username" => credential.username,
+      "secret_key" => credential.secret_key,
+      "requestData" => request_data
+    }
+    |> Jason.encode!()
+  end
+
+  @spec make_payload(Credential.t()) :: String.t()
+  defp make_payload(%Credential{} = credential) do
+    %{
+      "username" => credential.username,
+      "secret_key" => credential.secret_key,
+    }
+    |> Jason.encode!()
+  end
 end
