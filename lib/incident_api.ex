@@ -1,4 +1,28 @@
 defmodule LogpointApi.IncidentApi do
+  @moduledoc """
+  This module provides an implementation of the Logpoint Incident API.
+
+  ## Modules
+
+   - `TimeRange` : A struct used to represent a time range.
+   - `Incident` : A struct used to represent an incident.
+   - `IncidentComment` : A struct used to represent an incident comment.
+   - `IncidentCommentData` : A struct used to represent incident comment data.
+   - `IncidentIDs` : A struct used to represent incident IDs.
+
+  ## Public Functions
+
+   - `get_incidents/3` : Retrieves incidents within a specified time range.
+   - `get_data_from_incident/3` : Retrieves data from a specific incident.
+   - `get_incident_states/3` : Retrieves incident states within a specified time range.
+   - `get_users/2` : Retrieves user data.
+   - `add_comments/3` : Adds comments to an incident.
+   - `assign_incidents/4` : Assigns incidents to a user.
+   - `resolve_incidents/3` : Resolves incidents.
+   - `reopen_incidents/3` : Reopens incidents.
+   - `close_incidents/3` : Closes incidents.
+  """
+
   alias LogpointApi.Credential
   alias LogpointApi.IncidentApi.{Incident, IncidentComment, IncidentCommentData, IncidentIDs, TimeRange}
 
