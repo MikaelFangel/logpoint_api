@@ -71,9 +71,9 @@ jobs:
           ATTR_EMAIL: 'philip-cramer@users.noreply.github.com'
         run: |
           mix docs
-          mv ./doc ./docs
+          mv ./doc/*.html ./docs/
           git config --global user.name $ATTR_NAME
           git config --global user.email $ATTR_EMAIL
-          git add docs/*
+          git add docs/*.html
           git commit -am "Automatic docs generation"
           git push
