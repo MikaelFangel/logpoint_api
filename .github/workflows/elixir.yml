@@ -15,9 +15,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  ELIXIR_VER: '1.15.2'
-  OTP_VER: '26.0'
 
 jobs:
   build:
