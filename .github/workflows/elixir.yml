@@ -6,8 +6,6 @@
 name: Elixir CI
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -15,25 +13,19 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  ELIXIR_VER: '1.15.2'
-  OTP_VER: '26.0'
 
 jobs:
   build:
     name: Build and test
     runs-on: ubuntu-latest
-    env:
-      ELIXIR_VER: '1.15.2'
-      OTP_VER: '26.0'
 
     steps:
     - uses: actions/checkout@v3
     - name: Set up Elixir
       uses: erlef/setup-beam@61e01a43a562a89bfc54c7f9a378ff67b03e4a21 # v1.16.0
       with:
-        elixir-version: ${{ ELIXIR_VER }} # [Required] Define the Elixir version
-        otp-version: ${{ OTP_VER }}      # [Required] Define the Erlang/OTP version
+        elixir-version: '1.15.2' # [Required] Define the Elixir version
+        otp-version: '26.0'      # [Required] Define the Erlang/OTP version
     - name: Restore dependencies cache
       uses: actions/cache@v3
       with:
@@ -49,17 +41,17 @@ jobs:
     name: Update documentation
     runs-on: ubuntu-latest
     needs: build
-    env:
-      ELIXIR_VER: '1.15.2'
-      OTP_VER: '26.0'
     
     steps:
       - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          ref: ${{ github.head_ref }}
       - name: Set up Elixir
         uses: erlef/setup-beam@61e01a43a562a89bfc54c7f9a378ff67b03e4a21 # v1.16.0
         with:
-          elixir-version: ${{ ELIXIR_VER }} # [Required] Define the Elixir version
-          otp-version: ${{ OTP_VER }}      # [Required] Define the Erlang/OTP version
+          elixir-version: '1.15.2' # [Required] Define the Elixir version
+          otp-version: '26.0'      # [Required] Define the Erlang/OTP version
 
       - name: Restore dependencies cache
         uses: actions/cache@v3
@@ -70,28 +62,29 @@ jobs:
 
       - name: Install dependencies
         run: mix deps.get
-      - name: Generate docs
-        run: mix docs
-
-      - name: Move docs to correct folder
-        run: mv ./doc ./docs
       
-      - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          ref: ${{ github.head_ref }}
-      - name: Check for changes
-        id: autopep8
-        uses: peter-evans/autopep8@v2
-        with:
-          args: --exit-code --recursive --in-place --aggressive --aggressive .
-      - name: Commit autopep8 changes
-        if: steps.autopep8.outputs.exit-code == 2
+      - name: Generate Documentation
+        run: mix docs
+      
+      - name: Update documentation
+        run: mv ./doc/*.html ./docs/
+      
+      - name: Check for changes to docs
+        id: git_changes
+        run: >-
+          echo "::set-output name=TREE_STATUS::$(
+            git status --porcelain
+          )"
+      
+      - name: Commit changes to documentation
         env:
           ATTR_NAME: 'Philip Cramer'
           ATTR_EMAIL: 'philip-cramer@users.noreply.github.com'
         run: |
-          git config --global user.name ${{ ATTR_NAME}}
-          git config --global user.email ${{ ATTR_EMAIL }}
-          git commit -am "Automatic docs generation"
-          git push
+          if [ "${{ steps.git_changes.outputs.TREE_STATUS }}" != '' ]; then
+            git config --global user.name $ATTR_NAME
+            git config --global user.email $ATTR_EMAIL
+            git add docs/*.html
+            git commit -am "Automatic docs generation"
+            git push
+          fi
