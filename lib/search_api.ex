@@ -1,25 +1,6 @@
 defmodule LogpointApi.SearchApi do
   @moduledoc """
   This module provides an implementation of the Logpoint search API.
-
-  ## Modules
-
-   - `Query` : A struct used to represent a search query.
-   - `SearchID` : A struct used to represent a search ID.
-
-  ## Constants
-
-   - `@allowed_types` : A list of allowed types for data retrieval.
-
-  ## Public Functions
-
-   - `get_user_timezone/2` : Retrieves user timezone data.
-   - `get_logpoints/2` : Retrieves logpoints data.
-   - `get_repos/2` : Retrieves repositories data.
-   - `get_devices/2` : Retrieves devices data.
-   - `get_livesearches/2` : Retrieves live searches data.
-   - `get_search_id/3` : Creates a search in Logpoint and returns the JSON object.
-   - `get_search_result/3` : Retrieves search results for a given search ID.
   """
 
   alias LogpointApi.Credential
@@ -28,45 +9,73 @@ defmodule LogpointApi.SearchApi do
   @allowed_types ["user_preference", "loginspects", "logpoint_repos", "devices", "livesearches"]
 
   defmodule Query do
+    @moduledoc """
+    Struct representing a Logpoint search query.
+    """
     @derive {Jason.Encoder, only: [:query, :time_range, :limit, :repos]}
     defstruct [:query, :time_range, :limit, :repos]
   end
 
   defmodule SearchID do
+    @moduledoc """
+    Struct representing a search id.
+    """
     @derive {Jason.Encoder, only: [:search_id]}
     defstruct [:search_id]
   end
 
+  @doc """
+  Get the current users time zone information.
+  """
   @spec get_user_timezone(String.t(), Credential.t()) :: {:ok, map()} | {:error, String.t()}
   def get_user_timezone(ip, credential),
     do: get_allowed_data(ip, credential, "user_preference")
 
+  @doc """
+  Get all logpoints of a Logpoint instance.
+  """
   @spec get_logpoints(String.t(), Credential.t()) :: {:ok, map()} | {:error, String.t()}
   def get_logpoints(ip, credential),
     do: get_allowed_data(ip, credential, "loginspects")
 
+  @doc """
+  Get the repos of an instance.
+  """
   @spec get_repos(String.t(), Credential.t()) :: {:ok, map()} | {:error, String.t()}
   def get_repos(ip, credential),
     do: get_allowed_data(ip, credential, "logpoint_repos")
 
+  @doc """
+  Get the devices of the instance.
+  """
   @spec get_devices(String.t(), Credential.t()) :: {:ok, map()} | {:error, String.t()}
   def get_devices(ip, credential),
     do: get_allowed_data(ip, credential, "devices")
 
+  @doc """
+  Get all live search on a machine.
+  """
   @spec get_livesearches(String.t(), Credential.t()) :: {:ok, map()} | {:error, String.t()}
   def get_livesearches(ip, credential),
     do: get_allowed_data(ip, credential, "livesearches")
 
+  @doc """
+  Create a search and get its search id.
+  """
   @spec get_search_id(String.t(), Credential.t(), Query.t()) ::
           {:ok, map()} | {:error, String.t()}
   def get_search_id(ip, credential, %Query{} = query),
     do: get_search_logs(ip, credential, query)
 
+  @doc """
+  Retrieve the search result of a specific search id.
+  """
   @spec get_search_result(String.t(), Credential.t(), SearchID.t()) ::
           {:ok, map()} | {:error, String.t()}
   def get_search_result(ip, credential, %SearchID{} = search_id),
     do: get_search_logs(ip, credential, search_id)
 
+  @doc false
   @spec make_request(String.t(), String.t(), String.t()) :: {:ok, map()} | {:error, String.t()}
   defp make_request(ip, path, payload) do
     url = build_url(ip, path)
@@ -86,21 +95,25 @@ defmodule LogpointApi.SearchApi do
     end
   end
 
+  @doc false
   @spec build_url(String.t(), String.t()) :: String.t()
   defp build_url(ip, path), do: "https://" <> ip <> path
 
+  @doc false
   @spec get_allowed_data(String.t(), Credential.t(), String.t()) :: {:ok, map()} | {:error, String.t()}
   defp get_allowed_data(ip, credential, type) when type in @allowed_types do
     payload = build_payload(credential, %{"type" => type})
     make_request(ip, "/getalloweddata", payload)
   end
 
+  @doc false
   @spec get_search_logs(String.t(), Credential.t(), map()) :: {:ok, map()} | {:error, String.t()}
   defp get_search_logs(ip, credential, request_data) do
     payload = build_payload(credential, %{"requestData" => Jason.encode!(request_data)})
     make_request(ip, "/getsearchlogs", payload)
   end
 
+  @doc false
   @spec build_payload(Credential.t(), map()) :: String.t()
   defp build_payload(%Credential{} = credential, data) do
     Map.merge(
