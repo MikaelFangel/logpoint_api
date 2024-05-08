@@ -77,13 +77,14 @@ jobs:
           )"
       
       - name: Commit changes to documentation
-        if: steps.git_changes.outputs.TREE_STATUS != ""
         env:
           ATTR_NAME: 'Philip Cramer'
           ATTR_EMAIL: 'philip-cramer@users.noreply.github.com'
         run: |
-          git config --global user.name $ATTR_NAME
-          git config --global user.email $ATTR_EMAIL
-          git add docs/*.html
-          git commit -am "Automatic docs generation"
-          git push
+          if [ "${{ steps.git_changes.outputs.TREE_STATUS }}" != '' ]; then
+            git config --global user.name $ATTR_NAME
+            git config --global user.email $ATTR_EMAIL
+            git add docs/*.html
+            git commit -am "Automatic docs generation"
+            git push
+          fi
