@@ -63,13 +63,25 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
       
+      - name: Generate Documentation
+        run: mix docs
+      
       - name: Update documentation
+        run: mv ./doc/*.html ./docs/
+      
+      - name: Check for changes to docs
+        id: git_changes
+        run: >-
+          echo "::set-output name=TREE_STATUS::$(
+            git status --porcelain
+          )"
+      
+      - name: Commit changes to documentation
+        if: steps.git_changes.outputs.TREE_STATUS != ""
         env:
           ATTR_NAME: 'Philip Cramer'
           ATTR_EMAIL: 'philip-cramer@users.noreply.github.com'
         run: |
-          mix docs
-          mv ./doc/*.html ./docs/
           git config --global user.name $ATTR_NAME
           git config --global user.email $ATTR_EMAIL
           git add docs/*.html
