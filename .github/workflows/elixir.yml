@@ -64,23 +64,14 @@ jobs:
 
       - name: Install dependencies
         run: mix deps.get
-      - name: Generate docs
-        run: mix docs
 
-      - name: Move docs to correct folder
-        run: mv ./doc ./docs
-      
-      - name: Check for changes
-        id: autopep8
-        uses: peter-evans/autopep8@v2
-        with:
-          args: --exit-code --recursive --in-place --aggressive --aggressive .
-      - name: Commit autopep8 changes
-        if: steps.autopep8.outputs.exit-code == 2
+      - name: Update documentation
         env:
           ATTR_NAME: 'Philip Cramer'
           ATTR_EMAIL: 'philip-cramer@users.noreply.github.com'
         run: |
+          mix docs
+          mv ./doc/*.html ./docs/
           git config --global user.name $ATTR_NAME
           git config --global user.email $ATTR_EMAIL
           git commit -am "Automatic docs generation"
