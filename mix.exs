@@ -22,7 +22,8 @@ defmodule LogpointApi.MixProject do
   defp deps do
     [
       {:httpoison, "~> 2.0"},
-      {:jason, "~> 1.4.1"}
+      {:jason, "~> 1.4"},
+      {:ex_doc, "~> 0.21", only: :dev, runtime: false}
     ]
   end
 end
