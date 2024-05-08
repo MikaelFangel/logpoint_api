@@ -70,9 +70,7 @@ jobs:
           ATTR_NAME: 'Philip Cramer'
           ATTR_EMAIL: 'philip-cramer@users.noreply.github.com'
         run: |
-          pwd
           mix docs
-          mkdir ./docs
           mv ./doc/*.html ./docs/
           git config --global user.name $ATTR_NAME
           git config --global user.email $ATTR_EMAIL
