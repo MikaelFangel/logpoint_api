@@ -6,8 +6,8 @@
 name: Elixir CI
 
 on:
-  push:
-    branches: [ "docs-CI-CD" ]
+  merge:
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
