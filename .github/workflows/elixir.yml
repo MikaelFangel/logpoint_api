@@ -67,7 +67,9 @@ jobs:
         run: mix docs
       
       - name: Update documentation
-        run: rsync -r --inplace ./doc/* ./docs/
+        run: |
+          rsync -r --inplace ./doc/*.html ./docs/
+          rsync -r --inplace ./doc/dist/* ./docs/dist/
       
       - name: Check for changes to docs
         id: git_changes
