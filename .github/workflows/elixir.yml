@@ -80,8 +80,8 @@ jobs:
       
       - name: Commit changes to documentation
         env:
-          ATTR_NAME: 'Philip Cramer'
-          ATTR_EMAIL: 'philip-cramer@users.noreply.github.com'
+          ATTR_NAME: 'github-actions[bot]'
+          ATTR_EMAIL: 'github-actions[bot]@users.noreply.github.com'
         run: |
           if [ "${{ steps.git_changes.outputs.TREE_STATUS }}" != '' ]; then
             git config --global user.name $ATTR_NAME
