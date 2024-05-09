@@ -67,7 +67,9 @@ jobs:
         run: mix docs
       
       - name: Update documentation
-        run: mv ./doc/*.html ./docs/
+        run: |
+          rsync -r --inplace ./doc/*.html ./docs/
+          rsync -r --inplace ./doc/dist/* ./docs/dist/
       
       - name: Check for changes to docs
         id: git_changes
@@ -78,13 +80,13 @@ jobs:
       
       - name: Commit changes to documentation
         env:
-          ATTR_NAME: 'Philip Cramer'
-          ATTR_EMAIL: 'philip-cramer@users.noreply.github.com'
+          ATTR_NAME: 'github-actions[bot]'
+          ATTR_EMAIL: 'github-actions[bot]@users.noreply.github.com'
         run: |
           if [ "${{ steps.git_changes.outputs.TREE_STATUS }}" != '' ]; then
             git config --global user.name $ATTR_NAME
             git config --global user.email $ATTR_EMAIL
-            git add docs/*.html
+            git add docs/*
             git commit -am "Automatic docs generation"
             git push
           fi
