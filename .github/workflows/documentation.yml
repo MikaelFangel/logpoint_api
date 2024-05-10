@@ -14,8 +14,6 @@ jobs:
   documentation:
     name: Update documentation
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     
     steps:
       - uses: actions/checkout@v3
@@ -54,10 +52,4 @@ jobs:
           git config --global user.email $ATTR_EMAIL
           git add docs/*
           git commit -am "Automatic docs generation"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: docs
-          force_with_lease: true
+          git push origin docs --force-with-lease
