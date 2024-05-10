@@ -52,4 +52,4 @@ jobs:
           git config --global user.email $ATTR_EMAIL
           git add docs/*
           git commit -am "Automatic docs generation"
-          git push origin docs --force-with-lease
+          git push --set-upstream origin/docs --force-with-lease
