@@ -54,4 +54,10 @@ jobs:
           git config --global user.email $ATTR_EMAIL
           git add docs/*
           git commit -am "Automatic docs generation"
-          git push --set-upstream origin docs --force-with-lease
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: docs
+          force_with_lease: true
