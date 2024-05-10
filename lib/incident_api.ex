@@ -6,41 +6,46 @@ defmodule LogpointApi.IncidentApi do
   alias LogpointApi.Credential
 
   defmodule TimeRange do
-    @moduledoc """
+    @typedoc """
     Struct representing a time range with timestamps in epoch.
     """
+    @type t :: %__MODULE__{ts_from: Number.t(), ts_to: Number.t(), version: String.t()}
     @derive {Jason.Encoder, only: [:version, :ts_from, :ts_to]}
     defstruct [:ts_from, :ts_to, version: "0.1"]
   end
 
   defmodule Incident do
-    @moduledoc """
+    @typedoc """
     Struct used to fetch an incident.
     """
+    @type t :: %__MODULE__{incident_obj_id: String.t(), incident_id: String.t()}
     @derive {Jason.Encoder, only: [:incident_obj_id, :incident_id]}
     defstruct [:incident_obj_id, :incident_id]
   end
 
   defmodule IncidentComment do
-    @moduledoc """
+    @typedoc """
     Struct to add comments to a particular incident.
     """
+    @type t :: %__MODULE__{_id: String.t(), comments: list()}
     @derive {Jason.Encoder, only: [:_id, :comments]}
     defstruct _id: "", comments: []
   end
 
   defmodule IncidentCommentData do
-    @moduledoc """
+    @typedoc """
     Struct to add comments to a list of incidents using the `IncidentComment` struct.
     """
+    @type t :: %__MODULE__{version: String.t(), states: list()}
     @derive {Jason.Encoder, only: [:version, :states]}
     defstruct version: "0.1", states: [%IncidentComment{}]
   end
 
   defmodule IncidentIDs do
-    @moduledoc """
+    @typedoc """
     Struct that represents a list of incidents.
     """
+    @type t :: %__MODULE__{version: String.t(), incident_ids: list()}
     @derive {Jason.Encoder, only: [:version, :incident_ids]}
     defstruct version: "0.1", incident_ids: []
   end
@@ -137,7 +142,8 @@ defmodule LogpointApi.IncidentApi do
   end
 
   @doc false
-  @spec make_request(String.t(), String.t(), atom(), String.t()) :: {:ok, map()} | {:error, String.t()}
+  @spec make_request(String.t(), String.t(), atom(), String.t()) ::
+          {:ok, map()} | {:error, String.t()}
   defp make_request(ip, path, method, payload) do
     url = build_url(ip, path)
     headers = [{"Content-Type", "application/json"}]
@@ -176,7 +182,7 @@ defmodule LogpointApi.IncidentApi do
   defp make_payload(%Credential{} = credential) do
     %{
       "username" => credential.username,
-      "secret_key" => credential.secret_key,
+      "secret_key" => credential.secret_key
     }
     |> Jason.encode!()
   end
