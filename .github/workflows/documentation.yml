@@ -10,7 +10,6 @@ jobs:
   documentation:
     name: Update documentation
     runs-on: ubuntu-latest
-    needs: build
     
     steps:
       - uses: actions/checkout@v3
