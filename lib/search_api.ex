@@ -9,17 +9,24 @@ defmodule LogpointApi.SearchApi do
   @allowed_types ["user_preference", "loginspects", "logpoint_repos", "devices", "livesearches"]
 
   defmodule Query do
-    @moduledoc """
+    @typedoc """
     Struct representing a Logpoint search query.
     """
+    @type t :: %__MODULE__{
+            query: String.t(),
+            time_range: list(),
+            limit: Number.t(),
+            repos: list()
+          }
     @derive {Jason.Encoder, only: [:query, :time_range, :limit, :repos]}
     defstruct [:query, :time_range, :limit, :repos]
   end
 
   defmodule SearchID do
-    @moduledoc """
+    @typedoc """
     Struct representing a search id.
     """
+    @type t :: %__MODULE__{search_id: String.t()}
     @derive {Jason.Encoder, only: [:search_id]}
     defstruct [:search_id]
   end
@@ -100,7 +107,8 @@ defmodule LogpointApi.SearchApi do
   defp build_url(ip, path), do: "https://" <> ip <> path
 
   @doc false
-  @spec get_allowed_data(String.t(), Credential.t(), String.t()) :: {:ok, map()} | {:error, String.t()}
+  @spec get_allowed_data(String.t(), Credential.t(), String.t()) ::
+          {:ok, map()} | {:error, String.t()}
   defp get_allowed_data(ip, credential, type) when type in @allowed_types do
     payload = build_payload(credential, %{"type" => type})
     make_request(ip, "/getalloweddata", payload)
