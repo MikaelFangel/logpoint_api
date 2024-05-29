@@ -12,7 +12,10 @@ defmodule LogpointApi do
     defstruct [:username, :secret_key]
   end
 
-  @spec run_search(String.t(), Credential.t(), Query.t()) :: {:ok, map()} | {:error, String.t()}
+  @doc """
+  Run a search query.
+  """
+  @spec run_search(String.t(), Credential.t(), Query.t()) :: map()
   def run_search(ip, credential, %Query{} = query) do
     {:ok, %{"success" => true} = search_info} = SearchApi.get_search_id(ip, credential, query)
     search_id = Map.get(search_info, "search_id")
@@ -30,8 +33,12 @@ defmodule LogpointApi do
          search_id,
          query
        ) do
-    SearchApi.get_search_result(ip, credential, search_id)
-    |> handle_search_result(ip, credential, search_id, query)
+    result = SearchApi.get_search_result(ip, credential, search_id)
+
+    # Wait before retrying.
+    :timer.sleep(1000)
+
+    handle_search_result(result, ip, credential, search_id, query)
   end
 
   defp handle_search_result(
@@ -41,6 +48,9 @@ defmodule LogpointApi do
          _,
          query
        ) do
+    # Wait before recreating the search.
+    :timer.sleep(1000)
+
     run_search(ip, credential, query)
   end
 end
