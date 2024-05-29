@@ -1,5 +1,7 @@
 defmodule LogpointApi do
-  @moduledoc false
+  @moduledoc """
+  This module provides an implementation of the Logpoint API.
+  """
 
   alias LogpointApi.SearchApi.Query
   alias LogpointApi.SearchApi
