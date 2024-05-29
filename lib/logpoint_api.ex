@@ -14,7 +14,7 @@ defmodule LogpointApi do
 
   @spec run_search(String.t(), Credential.t(), Query.t()) :: {:ok, map()} | {:error, String.t()}
   def run_search(ip, credential, %Query{} = query) do
-    {:ok, search_info} = SearchApi.get_search_id(ip, credential, query)
+    {:ok, %{"success" => true} = search_info} = SearchApi.get_search_id(ip, credential, query)
     search_id = Map.get(search_info, "search_id")
 
     SearchApi.get_search_result(ip, credential, search_id)
