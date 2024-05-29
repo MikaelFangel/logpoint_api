@@ -64,3 +64,6 @@ This will retrieve the result of a given search ID. Be aware if the _final_ key 
 ```elixir
 LogpointApi.IncidentApi.get_search_result(ip, creds, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 ```
+
+## Contributing
+Please refer to [CONTRIBUTING.md](CONTRIBUTING.md).
