@@ -24,7 +24,7 @@ defmodule LogpointApi do
   defp handle_search_result({:ok, %{"final" => true} = result}, _, _, _, _), do: result
 
   defp handle_search_result(
-         {:ok, %{"final" => false, "succes" => true}},
+         {:ok, %{"final" => false, "success" => true}},
          ip,
          credential,
          search_id,
