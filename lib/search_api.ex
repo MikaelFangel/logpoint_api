@@ -4,7 +4,6 @@ defmodule LogpointApi.SearchApi do
   """
 
   alias LogpointApi.Credential
-  alias LogpointApi.SearchApi.{Query, SearchID}
 
   @allowed_types ["user_preference", "loginspects", "logpoint_repos", "devices", "livesearches"]
 
@@ -77,10 +76,10 @@ defmodule LogpointApi.SearchApi do
   @doc """
   Retrieve the search result of a specific search id.
   """
-  @spec get_search_result(String.t(), Credential.t(), SearchID.t()) ::
+  @spec get_search_result(String.t(), Credential.t(), String.t()) ::
           {:ok, map()} | {:error, String.t()}
-  def get_search_result(ip, credential, %SearchID{} = search_id),
-    do: get_search_logs(ip, credential, search_id)
+  def get_search_result(ip, credential, search_id),
+    do: get_search_logs(ip, credential, %SearchID{search_id: search_id})
 
   @doc false
   @spec make_request(String.t(), String.t(), String.t()) :: {:ok, map()} | {:error, String.t()}
