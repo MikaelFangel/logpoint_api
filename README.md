@@ -7,7 +7,7 @@ Elixir library implementing the [Logpoint API reference](https://docs.logpoint.c
 ```elixir
 def deps do
   [
-    {:logpoint_api, github: "MikaelFangel/logpoint_api", tag: "v0.2.2"}
+    {:logpoint_api, github: "MikaelFangel/logpoint_api", tag: "v0.2.3"}
   ]
 end
 ```
