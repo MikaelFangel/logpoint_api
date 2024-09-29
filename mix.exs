@@ -4,8 +4,8 @@ defmodule LogpointApi.MixProject do
   def project do
     [
       app: :logpoint_api,
-      version: "0.2.2",
-      elixir: "~> 1.15",
+      version: "0.2.3",
+      elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       docs: [
@@ -26,7 +26,8 @@ defmodule LogpointApi.MixProject do
     [
       {:httpoison, "~> 2.0"},
       {:jason, "~> 1.4"},
-      {:ex_doc, "~> 0.34", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
+      {:credo, "~> 1.7", only: :dev, runtime: false}
     ]
   end
 end
