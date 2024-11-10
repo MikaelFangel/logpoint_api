@@ -81,11 +81,19 @@ defmodule LogpointApi.IncidentApi do
   end
 
   @doc """
-  Get all incidents within a given time range.
+  Get the informations about incidents within a time range.
   """
-  @spec get_incidents(Client.t(), TimeRange.t()) :: {:ok, map()} | {:error, String.t()}
-  def get_incidents(client, %TimeRange{} = time_range),
-    do: get_incident_information(client, "/incidents", time_range)
+  @spec get_incident_info(Client.t(), :incidents | :incident_states, TimeRange.t()) ::
+          {:ok, map()} | {:error, String.t()}
+  def get_incident_info(client, action, %TimeRange{} = time_range) do
+    endpoint =
+      case action do
+        :incidents -> "/incidents"
+        :incident_states -> "/incident_states"
+      end
+
+    get_incident_information(client, endpoint, time_range)
+  end
 
   @doc """
   Get a specific incident and its related data.
@@ -93,14 +101,6 @@ defmodule LogpointApi.IncidentApi do
   @spec get_data_from_incident(Client.t(), Incident.t()) :: {:ok, map()} | {:error, String.t()}
   def get_data_from_incident(client, %Incident{} = incident),
     do: get_incident_information(client, "/get_data_from_incident", incident)
-
-  @doc """
-  Get the states of incidents within a specific time range.
-  """
-  @spec get_incident_states(Client.t(), TimeRange.t()) ::
-          {:ok, map()} | {:error, String.t()}
-  def get_incident_states(client, %TimeRange{} = time_range),
-    do: get_incident_information(client, "/incident_states", time_range)
 
   @doc """
   Get users.
