@@ -81,6 +81,13 @@ defmodule LogpointApi.IncidentApi do
   end
 
   @doc """
+  Get a specific incident and its related data.
+  """
+  @spec get_incident_info(Client.t(), Incident.t()) :: {:ok, map()} | {:error, String.t()}
+  def get_incident_info(client, %Incident{} = incident),
+    do: get_incident_information(client, "/get_data_from_incident", incident)
+
+  @doc """
   Get the informations about incidents within a time range.
   """
   @spec get_incident_info(Client.t(), :incidents | :incident_states, TimeRange.t()) ::
@@ -94,13 +101,6 @@ defmodule LogpointApi.IncidentApi do
 
     get_incident_information(client, endpoint, time_range)
   end
-
-  @doc """
-  Get a specific incident and its related data.
-  """
-  @spec get_data_from_incident(Client.t(), Incident.t()) :: {:ok, map()} | {:error, String.t()}
-  def get_data_from_incident(client, %Incident{} = incident),
-    do: get_incident_information(client, "/get_data_from_incident", incident)
 
   @doc """
   Get users.
