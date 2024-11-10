@@ -13,6 +13,11 @@ defmodule LogpointApi.IncidentApi do
     @type t :: %__MODULE__{ts_from: Number.t(), ts_to: Number.t(), version: String.t()}
     @derive {Jason.Encoder, only: [:version, :ts_from, :ts_to]}
     defstruct [:ts_from, :ts_to, version: "0.1"]
+
+    @spec new(number(), number(), String.t()) :: t()
+    def new(ts_from, ts_to, version \\ "0.1") do
+      %__MODULE__{ts_from: ts_from, ts_to: ts_to, version: version}
+    end
   end
 
   defmodule Incident do
@@ -23,6 +28,11 @@ defmodule LogpointApi.IncidentApi do
     @type t :: %__MODULE__{incident_obj_id: String.t(), incident_id: String.t()}
     @derive {Jason.Encoder, only: [:incident_obj_id, :incident_id]}
     defstruct [:incident_obj_id, :incident_id]
+
+    @spec new(String.t(), String.t()) :: t()
+    def new(incident_obj_id, incident_id) do
+      %__MODULE__{incident_obj_id: incident_obj_id, incident_id: incident_id}
+    end
   end
 
   defmodule IncidentComment do
@@ -33,6 +43,11 @@ defmodule LogpointApi.IncidentApi do
     @type t :: %__MODULE__{_id: String.t(), comments: list()}
     @derive {Jason.Encoder, only: [:_id, :comments]}
     defstruct _id: "", comments: []
+
+    @spec new(String.t(), [String.t()]) :: t()
+    def new(id, comments \\ []) do
+      %__MODULE__{_id: id, comments: comments}
+    end
   end
 
   defmodule IncidentCommentData do
@@ -43,6 +58,11 @@ defmodule LogpointApi.IncidentApi do
     @type t :: %__MODULE__{version: String.t(), states: list()}
     @derive {Jason.Encoder, only: [:version, :states]}
     defstruct version: "0.1", states: [%IncidentComment{}]
+
+    @spec new(String.t(), [IncidentComment.t()]) :: t()
+    def new(version \\ "0.1", states \\ [%IncidentComment{}]) do
+      %__MODULE__{version: version, states: states}
+    end
   end
 
   defmodule IncidentIDs do
@@ -53,6 +73,11 @@ defmodule LogpointApi.IncidentApi do
     @type t :: %__MODULE__{version: String.t(), incident_ids: list()}
     @derive {Jason.Encoder, only: [:version, :incident_ids]}
     defstruct version: "0.1", incident_ids: []
+
+    @spec new(String.t(), [String.t()]) :: t()
+    def new(version \\ "0.1", incident_ids \\ []) do
+      %__MODULE__{version: version, incident_ids: incident_ids}
+    end
   end
 
   @doc """
