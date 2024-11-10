@@ -8,6 +8,7 @@ defmodule LogpointApi.SearchApi do
   @allowed_types [:user_preference, :loginspects, :logpoint_repos, :devices, :livesearches]
 
   defmodule Query do
+    @moduledoc false
     @typedoc """
     Struct representing a Logpoint search query.
     """
@@ -60,7 +61,7 @@ defmodule LogpointApi.SearchApi do
   defp build_url(ip, path), do: "https://" <> ip <> path
 
   @doc false
-  @spec get_allowed_data(Client.t(), String.t()) :: {:ok, map()} | {:error, String.t()}
+  @spec get_allowed_data(Client.t(), atom()) :: {:ok, map()} | {:error, String.t()}
   def get_allowed_data(client, type) when type in @allowed_types do
     payload = build_payload(client, %{"type" => Atom.to_string(type)})
     make_request(client.ip, "/getalloweddata", payload)

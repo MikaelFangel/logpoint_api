@@ -6,6 +6,7 @@ defmodule LogpointApi.IncidentApi do
   alias LogpointApi.Client
 
   defmodule TimeRange do
+    @moduledoc false
     @typedoc """
     Struct representing a time range with timestamps in epoch.
     """
@@ -15,6 +16,7 @@ defmodule LogpointApi.IncidentApi do
   end
 
   defmodule Incident do
+    @moduledoc false
     @typedoc """
     Struct used to fetch an incident.
     """
@@ -24,6 +26,7 @@ defmodule LogpointApi.IncidentApi do
   end
 
   defmodule IncidentComment do
+    @moduledoc false
     @typedoc """
     Struct to add comments to a particular incident.
     """
@@ -33,6 +36,7 @@ defmodule LogpointApi.IncidentApi do
   end
 
   defmodule IncidentCommentData do
+    @moduledoc false
     @typedoc """
     Struct to add comments to a list of incidents using the `IncidentComment` struct.
     """
@@ -42,6 +46,7 @@ defmodule LogpointApi.IncidentApi do
   end
 
   defmodule IncidentIDs do
+    @moduledoc false
     @typedoc """
     Struct that represents a list of incidents.
     """
