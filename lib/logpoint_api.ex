@@ -16,7 +16,7 @@ defmodule LogpointApi do
 
     @spec new(String.t(), String.t(), String.t()) :: t()
     def new(ip, username, secret_key) do
-      %Client{ip: ip, username: username, secret_key: secret_key}
+      %__MODULE__{ip: ip, username: username, secret_key: secret_key}
     end
   end
 
