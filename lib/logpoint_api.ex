@@ -122,43 +122,34 @@ defmodule LogpointApi do
   end
 
   @doc """
-  Run a search query.
+  Run a search query and return its results.
   """
-  @spec run_search(Client.t(), Query.t()) :: map()
+  @spec run_search(Client.t(), Query.t()) :: {:ok, map()} | {:error, String.t()}
   def run_search(client, %Query{} = query) do
-    {:ok, %{"success" => true} = search_info} = get_search_id(client, query)
-    search_id = Map.get(search_info, "search_id")
-
-    get_search_result(client, search_id)
-    |> handle_search_result(client, search_id, query)
+    with {:ok, %{"search_id" => search_id}} <- get_search_id(client, query),
+         result <- fetch_search_result(client, search_id, query) do
+      result
+    else
+      {:error, reason} -> {:error, reason}
+    end
   end
 
-  defp handle_search_result({:ok, %{"final" => true} = result}, _, _, _), do: result
+  defp fetch_search_result(client, search_id, query) do
+    case get_search_result(client, search_id) do
+      {:ok, %{"final" => true} = result} ->
+        {:ok, result}
 
-  defp handle_search_result(
-         {:ok, %{"final" => false}},
-         client,
-         search_id,
-         query
-       ) do
-    result = get_search_result(client, search_id)
+      {:ok, %{"final" => false}} ->
+        :timer.sleep(1000)
+        fetch_search_result(client, search_id, query)
 
-    # Wait before retrying.
-    :timer.sleep(1000)
+      {:ok, %{"success" => false}} ->
+        :timer.sleep(1000)
+        run_search(client, query)
 
-    handle_search_result(result, client, search_id, query)
-  end
-
-  defp handle_search_result(
-         {:ok, %{"success" => false}},
-         client,
-         _,
-         query
-       ) do
-    # Wait before recreating the search.
-    :timer.sleep(1000)
-
-    run_search(client, query)
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   @doc """
