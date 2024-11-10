@@ -129,26 +129,20 @@ defmodule LogpointApi.IncidentApi do
   end
 
   @doc """
-  Resolve a list of incidents.
+  Update the state of a list of incidents.
   """
-  @spec resolve_incidents(Client.t(), IncidentIDs.t()) :: {:ok, map()} | {:error, String.t()}
-  def resolve_incidents(client, %IncidentIDs{} = incident_ids),
-    do: update_incident_state(client, "/resolve_incident", incident_ids)
-
-  @doc """
-  Reopen a list of incidents.
-  """
-  @spec reopen_incidents(Client.t(), IncidentIDs.t()) :: {:ok, map()} | {:error, String.t()}
-  def reopen_incidents(client, %IncidentIDs{} = incident_ids),
-    do: update_incident_state(client, "/reopen_incident", incident_ids)
-
-  @doc """
-  Close a list of incidents.
-  """
-  @spec close_incidents(Client.t(), IncidentIDs.t()) ::
+  @spec update_incidents(Client.t(), :resolve | :reopen | :close, IncidentIDs.t()) ::
           {:ok, map()} | {:error, String.t()}
-  def close_incidents(client, %IncidentIDs{} = incident_ids),
-    do: update_incident_state(client, "/close_incident", incident_ids)
+  def update_incidents(client, action, %IncidentIDs{} = incident_ids) do
+    endpoint =
+      case action do
+        :resolve -> "/resolve_incident"
+        :reopen -> "/reopen_incident"
+        :close -> "/close_incident"
+      end
+
+    update_incident_state(client, endpoint, incident_ids)
+  end
 
   @doc false
   @spec update_incident_state(Client.t(), String.t(), map()) ::
