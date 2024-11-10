@@ -270,9 +270,6 @@ defmodule LogpointApi do
     make_request(client.ip, path, :get, payload, :json)
   end
 
-  @spec build_url(String.t(), String.t()) :: String.t()
-  defp build_url(ip, path), do: "https://" <> ip <> path
-
   @spec build_payload(Client.t(), :query | :json, map() | nil) :: String.t()
   defp build_payload(%Client{} = client, format, request_data \\ nil) do
     base_payload = %{
@@ -296,7 +293,7 @@ defmodule LogpointApi do
   @spec make_request(String.t(), String.t(), atom(), String.t(), :json | :urlencoded) ::
           {:ok, map()} | {:error, String.t()}
   defp make_request(ip, path, method, payload, content_type) do
-    url = build_url(ip, path)
+    url = "https://" <> ip <> path
 
     headers =
       case content_type do
