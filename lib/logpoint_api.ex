@@ -7,6 +7,7 @@ defmodule LogpointApi do
   alias LogpointApi.SearchApi
 
   defmodule Client do
+    @moduledoc false
     @typedoc """
     Struct representing credentials used for authorization.
     """
