@@ -1,8 +1,10 @@
-name: Build
+name: Build Unlocked
 
 on:
   pull_request:
     branches: [ "main" ]
+  schedule:
+    - cron: "0 10 * * 0"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -11,7 +13,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build and test
+    name: Build and test unlocked
     runs-on: ubuntu-latest
 
     steps:
@@ -27,6 +29,8 @@ jobs:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
         restore-keys: ${{ runner.os }}-mix-
+    - name: Unlock dependencies
+      run: mix deps.unlock --all
     - name: Install dependencies
       run: mix deps.get
     - name: Run tests
