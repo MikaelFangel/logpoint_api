@@ -1,17 +1,16 @@
 defmodule LogpointClient do
   use GenServer
-  alias ElixirLS.LanguageServer.Plugins.Ecto.Query
   alias LogpointApi.Query
 
   def start_link(client) do
     GenServer.start_link(__MODULE__, client)
   end
 
-  def run_search(pid, query) do
+  def run_search(pid, %Query{} = query) do
     GenServer.call(pid, {:run_search, query})
   end
 
-  def get_search_id(pid, query) do
+  def get_search_id(pid, %Query{} = query) do
     GenServer.call(pid, {:get_search_id, query})
   end
 
@@ -19,7 +18,7 @@ defmodule LogpointClient do
     GenServer.call(pid, {:get_search_result, search_id})
   end
 
-  def get_allowed_data(pid, type) do
+  def get_allowed_data(pid, type) when is_atom(type) do
     GenServer.call(pid, {:get_allowed_data, type})
   end
 
@@ -29,7 +28,7 @@ defmodule LogpointClient do
   end
 
   @impl true
-  def handle_call({:run_search, %Query{} = query}, _from, client) do
+  def handle_call({:run_search, query}, _from, client) do
     result = LogpointApi.run_search(client, query)
     {:reply, result, client}
   end
@@ -41,7 +40,7 @@ defmodule LogpointClient do
   end
 
   @impl true
-  def handle_call({:get_search_id, %Query{} = query}, _from, client) do
+  def handle_call({:get_search_id, query}, _from, client) do
     result = LogpointApi.get_search_id(client, query)
     {:reply, result, client}
   end
