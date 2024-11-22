@@ -148,7 +148,6 @@ defmodule LogpointApi do
   @spec get_search_logs(Client.t(), map()) :: {:ok, map()} | {:error, String.t()}
   defp get_search_logs(client, request_data) do
     payload = build_payload(client, :query, %{"requestData" => Jason.encode!(request_data)})
-
     make_request(client.ip, "/getsearchlogs", :post, payload, :urlencoded)
   end
 
