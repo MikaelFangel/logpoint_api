@@ -68,7 +68,10 @@ defmodule LogpointClient do
         send(caller, {:search_id, search_id})
 
         server_pid = self()
-        Task.start(fn -> poll_search_result(server_pid, client.client, search_id) end)
+
+        Task.start(fn ->
+          poll_search_result(server_pid, client.client, search_id, query, search_id)
+        end)
 
         {:noreply, new_state}
 
@@ -98,17 +101,26 @@ defmodule LogpointClient do
     {:noreply, %{state | searches: updated_searches}}
   end
 
-  defp poll_search_result(server, client, search_id) do
+  defp poll_search_result(server, client, search_id, query, original_search_id) do
     case LogpointApi.get_search_result(client, search_id) do
       {:ok, %{"final" => true} = result} ->
-        send(server, {:search_complete, search_id, {:ok, result}})
+        send(server, {:search_complete, original_search_id, {:ok, result}})
 
       {:ok, %{"final" => false}} ->
         :timer.sleep(1000)
-        poll_search_result(server, client, search_id)
+        poll_search_result(server, client, search_id, query, original_search_id)
+
+      {:ok, %{"success" => false}} ->
+        case LogpointApi.get_search_id(client, query) do
+          {:ok, %{"search_id" => new_search_id}} ->
+            poll_search_result(server, client, new_search_id, query, original_search_id)
+
+          {:error, reason} ->
+            send(server, {:search_complete, original_search_id, {:error, reason}})
+        end
 
       {:error, reason} ->
-        send(server, {:search_complete, search_id, {:error, reason}})
+        send(server, {:search_complete, original_search_id, {:error, reason}})
     end
   end
 end
