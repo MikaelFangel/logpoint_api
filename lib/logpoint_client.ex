@@ -6,10 +6,6 @@ defmodule LogpointClient do
     GenServer.start_link(__MODULE__, %{client: client, searches: %{}})
   end
 
-  def run_search(pid, %Query{} = query) do
-    GenServer.call(pid, {:run_search, query})
-  end
-
   def submit_search(pid, %Query{} = query) do
     GenServer.cast(pid, {:submit_search, query, self()})
 
@@ -39,12 +35,6 @@ defmodule LogpointClient do
   @impl true
   def init(client) do
     {:ok, %{client: client, searches: %{}}}
-  end
-
-  @impl true
-  def handle_call({:run_search, query}, _from, state) do
-    result = LogpointApi.run_search(state.client, query)
-    {:reply, result, state}
   end
 
   @impl true

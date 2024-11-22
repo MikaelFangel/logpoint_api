@@ -122,37 +122,6 @@ defmodule LogpointApi do
   end
 
   @doc """
-  Run a search query and return its results.
-  """
-  @spec run_search(Client.t(), Query.t()) :: {:ok, map()} | {:error, String.t()}
-  def run_search(client, %Query{} = query) do
-    with {:ok, %{"search_id" => search_id}} <- get_search_id(client, query),
-         result <- fetch_search_result(client, search_id, query) do
-      result
-    else
-      {:error, reason} -> {:error, reason}
-    end
-  end
-
-  defp fetch_search_result(client, search_id, query) do
-    case get_search_result(client, search_id) do
-      {:ok, %{"final" => true} = result} ->
-        {:ok, result}
-
-      {:ok, %{"final" => false}} ->
-        :timer.sleep(1000)
-        fetch_search_result(client, search_id, query)
-
-      {:ok, %{"success" => false}} ->
-        :timer.sleep(1000)
-        run_search(client, query)
-
-      {:error, reason} ->
-        {:error, reason}
-    end
-  end
-
-  @doc """
   Create a search and get its search id.
   """
   @spec get_search_id(Client.t(), Query.t()) :: {:ok, map()} | {:error, String.t()}
