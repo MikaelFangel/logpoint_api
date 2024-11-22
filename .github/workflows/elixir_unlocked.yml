@@ -13,16 +13,21 @@ concurrency:
 
 jobs:
   build:
-    name: Build and test unlocked
     runs-on: ubuntu-latest
+    name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+
+    strategy:
+      matrix:
+        otp: ['24', '25', '26', '27']
+        elixir: ['1.15', '1.16', '1.17', '1.18']
 
     steps:
     - uses: actions/checkout@v4
     - name: Set up Elixir
       uses: erlef/setup-beam@v1
       with:
-        elixir-version: '1.17.3'
-        otp-version: '27.0'
+        otp-version: ${{matrix.otp}}
+        elixir-version: ${{matrix.elixir}}
     - name: Restore dependencies cache
       uses: actions/cache@v4
       with:
