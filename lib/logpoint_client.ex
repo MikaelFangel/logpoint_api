@@ -20,16 +20,16 @@ defmodule LogpointClient do
     end
   end
 
-  def get_search_status(pid, search_id) do
-    GenServer.call(pid, {:get_search_status, search_id})
+  def search_status(pid, search_id) do
+    GenServer.call(pid, {:search_status, search_id})
   end
 
   def search_result(pid, search_id) do
-    GenServer.call(pid, {:get_search_result, search_id})
+    GenServer.call(pid, {:search_result, search_id})
   end
 
-  def get_allowed_data(pid, type) do
-    GenServer.call(pid, {:get_allowed_data, type})
+  def allowed_data(pid, type) do
+    GenServer.call(pid, {:allowed_data, type})
   end
 
   @impl true
@@ -38,19 +38,19 @@ defmodule LogpointClient do
   end
 
   @impl true
-  def handle_call({:get_allowed_data, type}, _from, state) do
+  def handle_call({:allowed_data, type}, _from, state) do
     result = LogpointApi.get_allowed_data(state.client, type)
     {:reply, result, state}
   end
 
   @impl true
-  def handle_call({:get_search_status, search_id}, _from, %{searches: searches} = state) do
+  def handle_call({:search_status, search_id}, _from, %{searches: searches} = state) do
     status = Map.get(searches, search_id, %{status: :unknown})[:status]
     {:reply, status, state}
   end
 
   @impl true
-  def handle_call({:get_search_result, search_id}, _from, %{searches: searches} = state) do
+  def handle_call({:search_result, search_id}, _from, %{searches: searches} = state) do
     case Map.get(searches, search_id) do
       nil -> {:reply, {:error, :not_found}, state}
       %{result: result} -> {:reply, {:ok, result}, state}
