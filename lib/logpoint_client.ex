@@ -39,7 +39,7 @@ defmodule LogpointClient do
 
   @impl true
   def handle_call({:allowed_data, type}, _from, state) do
-    result = LogpointApi.get_allowed_data(state.client, type)
+    result = LogpointApi.get_allowed_data(state.client.client, type)
     {:reply, result, state}
   end
 
