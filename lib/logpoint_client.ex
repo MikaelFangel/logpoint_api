@@ -59,9 +59,16 @@ defmodule LogpointClient do
   @impl true
   def handle_call({:search_result, search_id}, _from, %{searches: searches} = state) do
     case Map.get(searches, search_id) do
-      nil -> {:reply, {:error, :not_found}, state}
-      %{result: result} -> {:reply, {:ok, result}, state}
-      _ -> {:reply, {:error, :not_ready}, state}
+      nil ->
+        {:reply, {:error, :not_found}, state}
+
+      %{result: result} ->
+        searches = Map.delete(searches, search_id)
+        state = %{state | searches: searches}
+        {:reply, {:ok, result}, state}
+
+      _ ->
+        {:reply, {:error, :not_ready}, state}
     end
   end
 
