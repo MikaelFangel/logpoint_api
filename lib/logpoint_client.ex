@@ -1,9 +1,12 @@
 defmodule LogpointClient do
   use GenServer
-  alias LogpointApi.Query
+  alias LogpointApi.{Client, Query}
 
-  def start_link(client) do
-    GenServer.start_link(__MODULE__, %{client: client, searches: %{}})
+  def new(ip, username, secret_key) do
+    GenServer.start_link(__MODULE__, %{
+      client: Client.new(ip, username, secret_key),
+      searches: %{}
+    })
   end
 
   def submit_search(pid, %Query{} = query) do
