@@ -31,6 +31,10 @@ defmodule LogpointClient do
     GenServer.call(pid, {:search_result, search_id})
   end
 
+  def searches(pid, status) when status in [:pending, :complete] do
+    GenServer.call(pid, {:searches, status})
+  end
+
   def allowed_data(pid, type) do
     GenServer.call(pid, {:allowed_data, type})
   end
@@ -59,6 +63,16 @@ defmodule LogpointClient do
       %{result: result} -> {:reply, {:ok, result}, state}
       _ -> {:reply, {:error, :not_ready}, state}
     end
+  end
+
+  @impl true
+  def handle_call({:searches, status}, _from, %{searches: searches} = state) do
+    search_ids =
+      searches
+      |> Enum.filter(fn {_search_id, search_data} -> search_data[:status] == status end)
+      |> Enum.map(fn {search_id, _search_data} -> search_id end)
+
+    {:reply, search_ids, state}
   end
 
   @impl true
