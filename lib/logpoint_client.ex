@@ -1,10 +1,18 @@
-defmodule LogpointClient do
-  use GenServer
-  alias LogpointApi.{Client, Query}
+defmodule Logpoint.Client do
+  @moduledoc false
+
+  use GenServer, restart: :transient
+  alias Logpoint.Api.Query
+
+  @typedoc """
+  Struct representing credentials used for authorization.
+  """
+  @type t :: %__MODULE__{ip: String.t(), username: String.t(), secret_key: String.t()}
+  defstruct [:ip, :username, :secret_key]
 
   def new(ip, username, secret_key) do
     GenServer.start_link(__MODULE__, %{
-      client: Client.new(ip, username, secret_key),
+      client: %Logpoint.Client{ip: ip, username: username, secret_key: secret_key},
       searches: %{}
     })
   end
@@ -23,30 +31,20 @@ defmodule LogpointClient do
     end
   end
 
-  def search_status(pid, search_id) do
-    GenServer.call(pid, {:search_status, search_id})
-  end
+  def search_status(pid, search_id), do: GenServer.call(pid, {:search_status, search_id})
+  def search_result(pid, search_id), do: GenServer.call(pid, {:search_result, search_id})
 
-  def search_result(pid, search_id) do
-    GenServer.call(pid, {:search_result, search_id})
-  end
+  def searches(pid, status) when status in [:pending, :complete],
+    do: GenServer.call(pid, {:searches, status})
 
-  def searches(pid, status) when status in [:pending, :complete] do
-    GenServer.call(pid, {:searches, status})
-  end
-
-  def allowed_data(pid, type) do
-    GenServer.call(pid, {:allowed_data, type})
-  end
+  def allowed_data(pid, type), do: GenServer.call(pid, {:allowed_data, type})
 
   @impl true
-  def init(client) do
-    {:ok, %{client: client, searches: %{}}}
-  end
+  def init(client), do: {:ok, %{client: client, searches: %{}}}
 
   @impl true
   def handle_call({:allowed_data, type}, _from, state) do
-    result = LogpointApi.get_allowed_data(state.client.client, type)
+    result = Logpoint.Api.get_allowed_data(state.client.client, type)
     {:reply, result, state}
   end
 
@@ -84,7 +82,7 @@ defmodule LogpointClient do
 
   @impl true
   def handle_cast({:submit_search, query, caller}, %{client: client, searches: searches} = state) do
-    case LogpointApi.get_search_id(client.client, query) do
+    case Logpoint.Api.get_search_id(client.client, query) do
       {:ok, %{"search_id" => search_id}} ->
         updated_searches = Map.put(searches, search_id, %{query: query, status: :pending})
         new_state = %{state | searches: updated_searches}
@@ -126,7 +124,7 @@ defmodule LogpointClient do
   end
 
   defp poll_search_result(server, client, search_id, query, original_search_id) do
-    case LogpointApi.get_search_result(client, search_id) do
+    case Logpoint.Api.get_search_result(client, search_id) do
       {:ok, %{"final" => true} = result} ->
         send(server, {:search_complete, original_search_id, {:ok, result}})
 
@@ -135,7 +133,7 @@ defmodule LogpointClient do
         poll_search_result(server, client, search_id, query, original_search_id)
 
       {:ok, %{"success" => false}} ->
-        case LogpointApi.get_search_id(client, query) do
+        case Logpoint.Api.get_search_id(client, query) do
           {:ok, %{"search_id" => new_search_id}} ->
             poll_search_result(server, client, new_search_id, query, original_search_id)
 
