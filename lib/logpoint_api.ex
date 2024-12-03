@@ -110,15 +110,13 @@ defmodule Logpoint.Api do
   Create a search and get its search id.
   """
   @spec get_search_id(Client.t(), Query.t()) :: {:ok, map()} | {:error, String.t()}
-  def get_search_id(client, %Query{} = query),
-    do: get_search_logs(client, query)
+  def get_search_id(client, %Query{} = query), do: get_search_logs(client, query)
 
   @doc """
   Retrieve the search result of a specific search id.
   """
   @spec get_search_result(Client.t(), String.t()) :: {:ok, map()} | {:error, String.t()}
-  def get_search_result(client, search_id),
-    do: get_search_logs(client, %{search_id: search_id})
+  def get_search_result(client, search_id), do: get_search_logs(client, %{search_id: search_id})
 
   @doc """
   Userd to get data about a Logppoint instance.

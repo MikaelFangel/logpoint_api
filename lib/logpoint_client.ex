@@ -2,6 +2,8 @@ defmodule Logpoint.Client do
   @moduledoc false
 
   use GenServer, restart: :transient
+
+  alias Logpoint.Api.IncidentIDs
   alias Logpoint.Api.Query
 
   @typedoc """
@@ -33,9 +35,7 @@ defmodule Logpoint.Client do
 
   def search_status(pid, search_id), do: GenServer.call(pid, {:search_status, search_id})
   def search_result(pid, search_id), do: GenServer.call(pid, {:search_result, search_id})
-
-  def searches(pid, status) when status in [:pending, :complete],
-    do: GenServer.call(pid, {:searches, status})
+  def searches(pid, status) when status in [:pending, :complete], do: GenServer.call(pid, {:searches, status})
 
   def allowed_data(pid, type), do: GenServer.call(pid, {:allowed_data, type})
 
@@ -51,12 +51,8 @@ defmodule Logpoint.Client do
   @doc """
   %{"id" => ["1", "2", "3"]}
   """
-  def add_comments(pid, comments),
-    do: GenServer.call(pid, {:add_comments, comments})
-
-  def update_incidents(pid, action, indent_ids),
-    do: GenServer.call(pid, {:update_incidents, action, indent_ids})
-
+  def add_comments(pid, comments), do: GenServer.call(pid, {:add_comments, comments})
+  def update_incidents(pid, action, indent_ids), do: GenServer.call(pid, {:update_incidents, action, indent_ids})
   def users(pid), do: GenServer.call(pid, {:users})
 
   @impl true
@@ -132,8 +128,7 @@ defmodule Logpoint.Client do
   @impl true
   def handle_call({:add_comments, comments}, _from, state) do
     comments =
-      comments
-      |> Enum.map(fn {k, v} -> Logpoint.Api.IncidentComment.new(k, v) end)
+      Enum.map(comments, fn {k, v} -> Logpoint.Api.IncidentComment.new(k, v) end)
 
     comment_data = Logpoint.Api.IncidentCommentData.new("0.1", comments)
     result = Logpoint.Api.add_comments(state.client.client, comment_data)
@@ -145,7 +140,7 @@ defmodule Logpoint.Client do
     result =
       Logpoint.Api.assign_incidents(
         state.client.client,
-        Logpoint.Api.IncidentIDs.new("0.1", incident_ids),
+        IncidentIDs.new("0.1", incident_ids),
         assingee_id
       )
 
@@ -157,7 +152,7 @@ defmodule Logpoint.Client do
       Logpoint.Api.update_incidents(
         state.client.client,
         action,
-        Logpoint.Api.IncidentIDs.new("0.1", incident_ids)
+        IncidentIDs.new("0.1", incident_ids)
       )
 
     {:reply, result, state}
@@ -190,7 +185,7 @@ defmodule Logpoint.Client do
   def handle_info({:search_complete, search_id, {:ok, result}}, %{searches: searches} = state) do
     updated_searches =
       Map.update(searches, search_id, %{status: :complete, result: result}, fn search ->
-        Map.put(search, :status, :complete) |> Map.put(:result, result)
+        search |> Map.put(:status, :complete) |> Map.put(:result, result)
       end)
 
     {:noreply, %{state | searches: updated_searches}}
@@ -200,7 +195,7 @@ defmodule Logpoint.Client do
   def handle_info({:search_complete, search_id, {:error, reason}}, %{searches: searches} = state) do
     updated_searches =
       Map.update(searches, search_id, %{status: :failed, error: reason}, fn search ->
-        Map.put(search, :status, :failed) |> Map.put(:error, reason)
+        search |> Map.put(:status, :failed) |> Map.put(:error, reason)
       end)
 
     {:noreply, %{state | searches: updated_searches}}
