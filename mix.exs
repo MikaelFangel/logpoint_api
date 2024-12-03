@@ -5,6 +5,8 @@ defmodule LogpointApi.MixProject do
     [
       app: :logpoint,
       version: "1.0.0",
+      description: description(),
+      package: package(),
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -29,6 +31,19 @@ defmodule LogpointApi.MixProject do
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: :dev, runtime: false},
       {:styler, "~> 1.2", only: [:dev, :test], runtime: false}
+    ]
+  end
+
+  defp description do
+    """
+    An easy to use wrapper around the Logpoint API.
+    """
+  end
+
+  defp package do
+    [
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/mikaelfangel/logpoint"}
     ]
   end
 end
