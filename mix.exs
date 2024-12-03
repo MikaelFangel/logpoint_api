@@ -4,7 +4,7 @@ defmodule LogpointApi.MixProject do
   def project do
     [
       app: :logpoint,
-      version: "0.2.3",
+      version: "1.0.0",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
