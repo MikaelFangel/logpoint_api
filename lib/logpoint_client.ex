@@ -39,6 +39,26 @@ defmodule Logpoint.Client do
 
   def allowed_data(pid, type), do: GenServer.call(pid, {:allowed_data, type})
 
+  def incident_info(pid, incident_obj_id, incident_id),
+    do: GenServer.call(pid, {:incident_info, incident_obj_id, incident_id})
+
+  def incident_info(pid, action, start_time, end_time),
+    do: GenServer.call(pid, {:incident_info, action, start_time, end_time})
+
+  def assign_incidents(pid, incident_ids, assingee_id),
+    do: GenServer.call(pid, {:assign_incidents, incident_ids, assingee_id})
+
+  @doc """
+  %{"id" => ["1", "2", "3"]}
+  """
+  def add_comments(pid, comments),
+    do: GenServer.call(pid, {:add_comments, comments})
+
+  def update_incidents(pid, action, indent_ids),
+    do: GenServer.call(pid, {:update_incidents, action, indent_ids})
+
+  def users(pid), do: GenServer.call(pid, {:users})
+
   @impl true
   def init(client), do: {:ok, %{client: client, searches: %{}}}
 
@@ -78,6 +98,69 @@ defmodule Logpoint.Client do
       |> Enum.map(fn {search_id, _search_data} -> search_id end)
 
     {:reply, search_ids, state}
+  end
+
+  @impl true
+  def handle_call({:incident_info, incident_obj_id, incident_id}, _from, state) do
+    info =
+      Logpoint.Api.get_incident_info(
+        state.client.client,
+        Logpoint.Api.Incident.new(incident_obj_id, incident_id)
+      )
+
+    {:reply, info, state}
+  end
+
+  @impl true
+  def handle_call({:incident_info, action, start_time, end_time}, _from, state) do
+    info =
+      Logpoint.Api.get_incident_info(
+        state.client.client,
+        action,
+        Logpoint.Api.TimeRange.new(start_time, end_time)
+      )
+
+    {:reply, info, state}
+  end
+
+  @impl true
+  def handle_call({:users}, _from, state) do
+    users = Logpoint.Api.get_users(state.client.client)
+    {:reply, users, state}
+  end
+
+  @impl true
+  def handle_call({:add_comments, comments}, _from, state) do
+    comments =
+      comments
+      |> Enum.map(fn {k, v} -> Logpoint.Api.IncidentComment.new(k, v) end)
+
+    comment_data = Logpoint.Api.IncidentCommentData.new("0.1", comments)
+    result = Logpoint.Api.add_comments(state.client.client, comment_data)
+
+    {:reply, result, state}
+  end
+
+  def handle_call({:assign_incidents, incident_ids, assingee_id}, _from, state) do
+    result =
+      Logpoint.Api.assign_incidents(
+        state.client.client,
+        Logpoint.Api.IncidentIDs.new("0.1", incident_ids),
+        assingee_id
+      )
+
+    {:reply, result, state}
+  end
+
+  def handle_call({:update_incidents, action, incident_ids}, _from, state) do
+    result =
+      Logpoint.Api.update_incidents(
+        state.client.client,
+        action,
+        Logpoint.Api.IncidentIDs.new("0.1", incident_ids)
+      )
+
+    {:reply, result, state}
   end
 
   @impl true
