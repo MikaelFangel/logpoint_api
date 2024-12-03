@@ -3,7 +3,7 @@ defmodule LogpointApi.MixProject do
 
   def project do
     [
-      app: :logpoint_api,
+      app: :logpoint,
       version: "0.2.3",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,

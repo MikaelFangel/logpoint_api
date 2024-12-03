@@ -1,25 +1,10 @@
-defmodule LogpointApi do
+defmodule Logpoint.Api do
   @moduledoc """
   This module provides an implementation of the Logpoint Incident API.
   """
-
-  alias LogpointApi.Client
+  alias Logpoint.Client
 
   @allowed_types [:user_preference, :loginspects, :logpoint_repos, :devices, :livesearches]
-
-  defmodule Client do
-    @moduledoc false
-    @typedoc """
-    Struct representing credentials used for authorization.
-    """
-    @type t :: %__MODULE__{ip: String.t(), username: String.t(), secret_key: String.t()}
-    defstruct [:ip, :username, :secret_key]
-
-    @spec new(String.t(), String.t(), String.t()) :: t()
-    def new(ip, username, secret_key) do
-      %__MODULE__{ip: ip, username: username, secret_key: secret_key}
-    end
-  end
 
   defmodule Query do
     @moduledoc false
