@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.38.3">
-    <meta name="project" content="logpoint_api v1.0.0">
+    <meta name="project" content="logpoint_api v1.0.1">
 
 
-    <title>LogpointApi — logpoint_api v1.0.0</title>
+    <title>LogpointApi — logpoint_api v1.0.1</title>
 
     <link rel="stylesheet" href="dist/html-elixir-BHUPNQFZ.css" />
 
@@ -37,7 +37,7 @@
 logpoint_api
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v1.0.0
+          v1.0.1
         </div>
       </div>
     </div>
@@ -76,11 +76,11 @@ logpoint_api
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">LogpointApi</span> 
-      <small class="app-vsn" translate="no">(logpoint_api v1.0.0)</small>
+      <small class="app-vsn" translate="no">(logpoint_api v1.0.1)</small>
 
     </h1>
 
-      <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -91,27 +91,27 @@ logpoint_api
     <section id="moduledoc">
 <p>Elixir library for interacting with the Logpoint API.</p><p>This library provides a simple, stateless interface to the Logpoint API.
 All functions take credentials as parameters and make direct HTTP requests.</p><h2 id="module-example-usage" class="section-heading"><a href="#module-example-usage" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example Usage</span></h2><pre><code class="makeup elixir" translate="no"><span class="c1"># Define credentials</span><span class="w">
-</span><span class="n">credentials</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="9276175261-1">%{</span><span class="w">
+</span><span class="n">credentials</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="4688714130-1">%{</span><span class="w">
   </span><span class="ss">ip</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="w">
   </span><span class="ss">username</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;admin&quot;</span><span class="p">,</span><span class="w">
   </span><span class="ss">secret_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&quot;</span><span class="p">,</span><span class="w">
   </span><span class="ss">verify_ssl</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="w">  </span><span class="c1"># optional, defaults to false for self-signed certs</span><span class="w">
-</span><span class="p" data-group-id="9276175261-1">}</span><span class="w">
+</span><span class="p" data-group-id="4688714130-1">}</span><span class="w">
 
 </span><span class="c1"># Create a query</span><span class="w">
-</span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="9276175261-2">%</span><span class="nc" data-group-id="9276175261-2">LogpointApi.Query</span><span class="p" data-group-id="9276175261-2">{</span><span class="w">
+</span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="4688714130-2">%</span><span class="nc" data-group-id="4688714130-2">LogpointApi.Query</span><span class="p" data-group-id="4688714130-2">{</span><span class="w">
   </span><span class="ss">query</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;user=*&quot;</span><span class="p">,</span><span class="w">
   </span><span class="ss">limit</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w">
-  </span><span class="ss">repos</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9276175261-3">[</span><span class="s">&quot;127.0.0.1:5504&quot;</span><span class="p" data-group-id="9276175261-3">]</span><span class="p">,</span><span class="w">
-  </span><span class="ss">time_range</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9276175261-4">[</span><span class="mi">1_714_986_600</span><span class="p">,</span><span class="w"> </span><span class="mi">1_715_031_000</span><span class="p" data-group-id="9276175261-4">]</span><span class="w">
-</span><span class="p" data-group-id="9276175261-2">}</span><span class="w">
+  </span><span class="ss">repos</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4688714130-3">[</span><span class="s">&quot;127.0.0.1:5504&quot;</span><span class="p" data-group-id="4688714130-3">]</span><span class="p">,</span><span class="w">
+  </span><span class="ss">time_range</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4688714130-4">[</span><span class="mi">1_714_986_600</span><span class="p">,</span><span class="w"> </span><span class="mi">1_715_031_000</span><span class="p" data-group-id="4688714130-4">]</span><span class="w">
+</span><span class="p" data-group-id="4688714130-2">}</span><span class="w">
 
 </span><span class="c1"># Run a complete search (get search_id + poll for results)</span><span class="w">
-</span><span class="p" data-group-id="9276175261-5">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="9276175261-5">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">LogpointApi</span><span class="o">.</span><span class="n">run_search</span><span class="p" data-group-id="9276175261-6">(</span><span class="n">credentials</span><span class="p">,</span><span class="w"> </span><span class="n">query</span><span class="p" data-group-id="9276175261-6">)</span><span class="w">
+</span><span class="p" data-group-id="4688714130-5">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="4688714130-5">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">LogpointApi</span><span class="o">.</span><span class="n">run_search</span><span class="p" data-group-id="4688714130-6">(</span><span class="n">credentials</span><span class="p">,</span><span class="w"> </span><span class="n">query</span><span class="p" data-group-id="4688714130-6">)</span><span class="w">
 
 </span><span class="c1"># Or do it step by step</span><span class="w">
-</span><span class="p" data-group-id="9276175261-7">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9276175261-8">%{</span><span class="s">&quot;search_id&quot;</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="n">search_id</span><span class="p" data-group-id="9276175261-8">}</span><span class="p" data-group-id="9276175261-7">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">LogpointApi</span><span class="o">.</span><span class="n">get_search_id</span><span class="p" data-group-id="9276175261-9">(</span><span class="n">credentials</span><span class="p">,</span><span class="w"> </span><span class="n">query</span><span class="p" data-group-id="9276175261-9">)</span><span class="w">
-</span><span class="p" data-group-id="9276175261-10">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="9276175261-10">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">LogpointApi</span><span class="o">.</span><span class="n">get_search_result</span><span class="p" data-group-id="9276175261-11">(</span><span class="n">credentials</span><span class="p">,</span><span class="w"> </span><span class="n">search_id</span><span class="p" data-group-id="9276175261-11">)</span></code></pre>
+</span><span class="p" data-group-id="4688714130-7">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4688714130-8">%{</span><span class="s">&quot;search_id&quot;</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="n">search_id</span><span class="p" data-group-id="4688714130-8">}</span><span class="p" data-group-id="4688714130-7">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">LogpointApi</span><span class="o">.</span><span class="n">get_search_id</span><span class="p" data-group-id="4688714130-9">(</span><span class="n">credentials</span><span class="p">,</span><span class="w"> </span><span class="n">query</span><span class="p" data-group-id="4688714130-9">)</span><span class="w">
+</span><span class="p" data-group-id="4688714130-10">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="4688714130-10">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">LogpointApi</span><span class="o">.</span><span class="n">get_search_result</span><span class="p" data-group-id="4688714130-11">(</span><span class="n">credentials</span><span class="p">,</span><span class="w"> </span><span class="n">search_id</span><span class="p" data-group-id="4688714130-11">)</span></code></pre>
     </section>
 
 </div>
@@ -348,7 +348,7 @@ All functions take credentials as parameters and make direct HTTP requests.</p><
       <h1 class="signature" translate="no">credentials()</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L47" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L47" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -394,7 +394,7 @@ All functions take credentials as parameters and make direct HTTP requests.</p><
       <h1 class="signature" translate="no">add_comments(credentials, incident_comment_data)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L160" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L160" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -424,7 +424,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">assign_incidents(credentials, incident_ids, assignee_id)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L180" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L180" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -457,7 +457,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">close_incidents(credentials, incident_ids)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L203" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L203" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -486,7 +486,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">devices(credentials)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L104" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L104" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -514,7 +514,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">get_data_from_incident(credentials, incident)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L122" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L122" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -543,7 +543,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">get_search_id(credentials, query)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L74" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L74" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -572,7 +572,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">get_search_result(credentials, search_id)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L80" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L80" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -601,7 +601,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">incident(credentials, incident_obj_id, incident_id)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L130" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L130" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -630,7 +630,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">incident_states(credentials, start_time, end_time)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L148" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L148" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -659,7 +659,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">incidents(credentials, start_time, end_time)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L139" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L139" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -688,7 +688,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">livesearches(credentials)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L110" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L110" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -716,7 +716,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">loginspects(credentials)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L92" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L92" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -744,7 +744,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">logpoint_repos(credentials)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L98" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L98" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -772,7 +772,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">reopen_incidents(credentials, incident_ids)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L212" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L212" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -801,7 +801,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">resolve_incidents(credentials, incident_ids)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L194" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L194" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -832,7 +832,7 @@ or an IncidentCommentData struct.</p>
       <h1 class="signature" translate="no">run_search(credentials, query, opts \\ [])</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L61" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L61" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -862,7 +862,7 @@ with automatic polling until the search completes.</p>
       <h1 class="signature" translate="no">user_preference(credentials)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L86" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L86" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -890,7 +890,7 @@ with automatic polling until the search completes.</p>
       <h1 class="signature" translate="no">users(credentials)</h1>
 
 
-        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.0/lib/logpoint_api.ex#L116" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/MikaelFangel/logpoint_api/blob/v1.0.1/lib/logpoint_api.ex#L116" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -916,9 +916,9 @@ with automatic polling until the search completes.</p>
       <p>
 
           <span class="line">
-            <a href="https://hex.pm/packages/logpoint_api/1.0.0" class="footer-hex-package">Hex Package</a>
+            <a href="https://hex.pm/packages/logpoint_api/1.0.1" class="footer-hex-package">Hex Package</a>
 
-            <a href="https://preview.hex.pm/preview/logpoint_api/1.0.0">Hex Preview</a>
+            <a href="https://preview.hex.pm/preview/logpoint_api/1.0.1">Hex Preview</a>
 
           </span>
 
