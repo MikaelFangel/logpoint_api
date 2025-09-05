@@ -170,10 +170,7 @@ defmodule LogpointApi.Core do
         :urlencoded -> [{"Content-Type", "application/x-www-form-urlencoded"}]
       end
 
-    ssl_opts = if verify_ssl, do: [verify: :verify_peer], else: [verify: :verify_none]
-    options = [ssl: ssl_opts, recv_timeout: 60_000]
-
-    case HTTPoison.request(method, url, payload, headers, options) do
+    case HTTPoison.request(method, url, payload, headers, if(verify_ssl, do: [], else: [hackney: [:insecure]])) do
       {:ok, %HTTPoison.Response{status_code: status, body: body}} when status in 200..299 ->
         case Jason.decode(body) do
           {:ok, parsed} -> {:ok, parsed}

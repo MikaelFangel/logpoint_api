@@ -9,7 +9,7 @@ This library provides simple functions that make direct HTTP requests to the Log
 ```elixir
 def deps do
   [
-    {:logpoint_api, github: "MikaelFangel/logpoint_api", tag: "v1.0.0"}
+    {:logpoint_api, "~> 1.0.0"}
   ]
 end
 ```
