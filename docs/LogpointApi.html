@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.38.3">
+    <meta name="project" content="logpoint v1.0.0">
+
+
+    <title>LogpointApi — logpoint v1.0.0</title>
+
+    <link rel="stylesheet" href="dist/html-elixir-BHUPNQFZ.css" />
+
+    <script defer src="dist/sidebar_items-57B250FA.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-Y223O6DN.js"></script>
+
+  </head>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="api-reference.html" class="sidebar-projectName" translate="no">
+logpoint
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v1.0.0
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
+  </div>
+</nav>
+
+<output role="status" id="toast"></output>
+
+<main class="content page-module" id="main" data-type="modules">
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of logpoint</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search" tabindex="-1">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">LogpointApi</span> 
+      <small class="app-vsn" translate="no">(logpoint v1.0.0)</small>
+
+    </h1>
+
+  </div>
+
+
+    <section id="moduledoc">
+<p>Elixir library for interacting with the Logpoint API.</p><p>This library provides a simple, stateless interface to the Logpoint API.
+All functions take credentials as parameters and make direct HTTP requests.</p><h2 id="module-example-usage" class="section-heading"><a href="#module-example-usage" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example Usage</span></h2><pre><code class="makeup elixir" translate="no"><span class="c1"># Define credentials</span><span class="w">
+</span><span class="n">credentials</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="6214968579-1">%{</span><span class="w">
+  </span><span class="ss">ip</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="w">
+  </span><span class="ss">username</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;admin&quot;</span><span class="p">,</span><span class="w">
+  </span><span class="ss">secret_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&quot;</span><span class="p">,</span><span class="w">
+  </span><span class="ss">verify_ssl</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="w">  </span><span class="c1"># optional, defaults to false for self-signed certs</span><span class="w">
+</span><span class="p" data-group-id="6214968579-1">}</span><span class="w">
+
+</span><span class="c1"># Create a query</span><span class="w">
+</span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="6214968579-2">%</span><span class="nc" data-group-id="6214968579-2">LogpointApi.Query</span><span class="p" data-group-id="6214968579-2">{</span><span class="w">
+  </span><span class="ss">query</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;user=*&quot;</span><span class="p">,</span><span class="w">
+  </span><span class="ss">limit</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w">
+  </span><span class="ss">repos</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6214968579-3">[</span><span class="s">&quot;127.0.0.1:5504&quot;</span><span class="p" data-group-id="6214968579-3">]</span><span class="p">,</span><span class="w">
+  </span><span class="ss">time_range</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6214968579-4">[</span><span class="mi">1_714_986_600</span><span class="p">,</span><span class="w"> </span><span class="mi">1_715_031_000</span><span class="p" data-group-id="6214968579-4">]</span><span class="w">
+</span><span class="p" data-group-id="6214968579-2">}</span><span class="w">
+
+</span><span class="c1"># Run a complete search (get search_id + poll for results)</span><span class="w">
+</span><span class="p" data-group-id="6214968579-5">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="6214968579-5">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">LogpointApi</span><span class="o">.</span><span class="n">run_search</span><span class="p" data-group-id="6214968579-6">(</span><span class="n">credentials</span><span class="p">,</span><span class="w"> </span><span class="n">query</span><span class="p" data-group-id="6214968579-6">)</span><span class="w">
+
+</span><span class="c1"># Or do it step by step</span><span class="w">
+</span><span class="p" data-group-id="6214968579-7">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6214968579-8">%{</span><span class="s">&quot;search_id&quot;</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="n">search_id</span><span class="p" data-group-id="6214968579-8">}</span><span class="p" data-group-id="6214968579-7">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">LogpointApi</span><span class="o">.</span><span class="n">get_search_id</span><span class="p" data-group-id="6214968579-9">(</span><span class="n">credentials</span><span class="p">,</span><span class="w"> </span><span class="n">query</span><span class="p" data-group-id="6214968579-9">)</span><span class="w">
+</span><span class="p" data-group-id="6214968579-10">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="6214968579-10">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">LogpointApi</span><span class="o">.</span><span class="n">get_search_result</span><span class="p" data-group-id="6214968579-11">(</span><span class="n">credentials</span><span class="p">,</span><span class="w"> </span><span class="n">search_id</span><span class="p" data-group-id="6214968579-11">)</span></code></pre>
+    </section>
+
+</div>
+
+  <section id="summary" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#summary">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Summary</span>
+    </h1>
+<div class="summary-types summary">
+  <h2>
+    <a href="#types">Types</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:credentials/0" data-no-tooltip="" translate="no">credentials()</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Credentials for authenticating with the Logpoint API.</p></div>
+
+    </div>
+
+</div>
+<div class="summary-functions summary">
+  <h2>
+    <a href="#functions">Functions</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#add_comments/2" data-no-tooltip="" translate="no">add_comments(credentials, incident_comment_data)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Add comments to incidents.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#assign_incidents/3" data-no-tooltip="" translate="no">assign_incidents(credentials, incident_ids, assignee_id)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Assign incidents to a user.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#close_incidents/2" data-no-tooltip="" translate="no">close_incidents(credentials, incident_ids)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Close incidents.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#devices/1" data-no-tooltip="" translate="no">devices(credentials)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Get devices from the Logpoint instance.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#get_data_from_incident/2" data-no-tooltip="" translate="no">get_data_from_incident(credentials, incident)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Get a specific incident and its related data.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#get_search_id/2" data-no-tooltip="" translate="no">get_search_id(credentials, query)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Create a search and get its search id.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#get_search_result/2" data-no-tooltip="" translate="no">get_search_result(credentials, search_id)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Retrieve the search result of a specific search id.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#incident/3" data-no-tooltip="" translate="no">incident(credentials, incident_obj_id, incident_id)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Get incident information by object ID and incident ID.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#incident_states/3" data-no-tooltip="" translate="no">incident_states(credentials, start_time, end_time)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Get incident states within a time range.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#incidents/3" data-no-tooltip="" translate="no">incidents(credentials, start_time, end_time)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Get incidents within a time range.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#livesearches/1" data-no-tooltip="" translate="no">livesearches(credentials)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Get live searches from the Logpoint instance.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#loginspects/1" data-no-tooltip="" translate="no">loginspects(credentials)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Get loginspects from the Logpoint instance.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#logpoint_repos/1" data-no-tooltip="" translate="no">logpoint_repos(credentials)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Get logpoint repositories from the instance.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#reopen_incidents/2" data-no-tooltip="" translate="no">reopen_incidents(credentials, incident_ids)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Reopen incidents.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#resolve_incidents/2" data-no-tooltip="" translate="no">resolve_incidents(credentials, incident_ids)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Resolve incidents.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#run_search/3" data-no-tooltip="" translate="no">run_search(credentials, query, opts \\ [])</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Run a complete search: submit query, poll for completion, and return results.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#user_preference/1" data-no-tooltip="" translate="no">user_preference(credentials)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Get user preferences from the Logpoint instance.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#users/1" data-no-tooltip="" translate="no">users(credentials)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Get users from the Logpoint instance.</p></div>
+
+    </div>
+
+</div>
+
+  </section>
+
+
+  <section id="types" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#types">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Types</span>
+    </h1>
+
+    <div class="types-list">
+<section class="detail" id="t:credentials/0">
+
+  <div class="detail-header">
+    <a href="#t:credentials/0" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">credentials()</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> credentials() :: %{
+  ip: <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>(),
+  username: <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>(),
+  secret_key: <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>(),
+  verify_ssl: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()
+}</pre>
+
+      </div>
+
+<p>Credentials for authenticating with the Logpoint API.</p>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+  <section id="functions" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#functions">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Functions</span>
+    </h1>
+
+    <div class="functions-list">
+<section class="detail" id="add_comments/2">
+
+  <div class="detail-header">
+    <a href="#add_comments/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">add_comments(credentials, incident_comment_data)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> add_comments(<a href="#t:credentials/0">credentials</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>() | LogpointApi.IncidentCommentData.t()) ::
+  {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Add comments to incidents.</p><p>Accepts either a map of %{&quot;incident_id&quot; =&gt; [&quot;comment1&quot;, &quot;comment2&quot;]}
+or an IncidentCommentData struct.</p>
+  </section>
+</section>
+<section class="detail" id="assign_incidents/3">
+
+  <div class="detail-header">
+    <a href="#assign_incidents/3" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">assign_incidents(credentials, incident_ids, assignee_id)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> assign_incidents(
+  <a href="#t:credentials/0">credentials</a>(),
+  [<a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()] | LogpointApi.IncidentIDs.t(),
+  <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()
+) ::
+  {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Assign incidents to a user.</p><p>Accepts either a list of incident IDs or an IncidentIDs struct.</p>
+  </section>
+</section>
+<section class="detail" id="close_incidents/2">
+
+  <div class="detail-header">
+    <a href="#close_incidents/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">close_incidents(credentials, incident_ids)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> close_incidents(<a href="#t:credentials/0">credentials</a>(), [<a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()]) ::
+  {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Close incidents.</p>
+  </section>
+</section>
+<section class="detail" id="devices/1">
+
+  <div class="detail-header">
+    <a href="#devices/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">devices(credentials)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> devices(<a href="#t:credentials/0">credentials</a>()) :: {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Get devices from the Logpoint instance.</p>
+  </section>
+</section>
+<section class="detail" id="get_data_from_incident/2">
+
+  <div class="detail-header">
+    <a href="#get_data_from_incident/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">get_data_from_incident(credentials, incident)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> get_data_from_incident(<a href="#t:credentials/0">credentials</a>(), LogpointApi.Incident.t()) ::
+  {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Get a specific incident and its related data.</p>
+  </section>
+</section>
+<section class="detail" id="get_search_id/2">
+
+  <div class="detail-header">
+    <a href="#get_search_id/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">get_search_id(credentials, query)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> get_search_id(<a href="#t:credentials/0">credentials</a>(), LogpointApi.Query.t()) ::
+  {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Create a search and get its search id.</p>
+  </section>
+</section>
+<section class="detail" id="get_search_result/2">
+
+  <div class="detail-header">
+    <a href="#get_search_result/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">get_search_result(credentials, search_id)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> get_search_result(<a href="#t:credentials/0">credentials</a>(), <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()) ::
+  {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Retrieve the search result of a specific search id.</p>
+  </section>
+</section>
+<section class="detail" id="incident/3">
+
+  <div class="detail-header">
+    <a href="#incident/3" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">incident(credentials, incident_obj_id, incident_id)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> incident(<a href="#t:credentials/0">credentials</a>(), <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>(), <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()) ::
+  {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Get incident information by object ID and incident ID.</p>
+  </section>
+</section>
+<section class="detail" id="incident_states/3">
+
+  <div class="detail-header">
+    <a href="#incident_states/3" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">incident_states(credentials, start_time, end_time)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> incident_states(<a href="#t:credentials/0">credentials</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()) ::
+  {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Get incident states within a time range.</p>
+  </section>
+</section>
+<section class="detail" id="incidents/3">
+
+  <div class="detail-header">
+    <a href="#incidents/3" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">incidents(credentials, start_time, end_time)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> incidents(<a href="#t:credentials/0">credentials</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()) ::
+  {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Get incidents within a time range.</p>
+  </section>
+</section>
+<section class="detail" id="livesearches/1">
+
+  <div class="detail-header">
+    <a href="#livesearches/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">livesearches(credentials)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> livesearches(<a href="#t:credentials/0">credentials</a>()) :: {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Get live searches from the Logpoint instance.</p>
+  </section>
+</section>
+<section class="detail" id="loginspects/1">
+
+  <div class="detail-header">
+    <a href="#loginspects/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">loginspects(credentials)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> loginspects(<a href="#t:credentials/0">credentials</a>()) :: {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Get loginspects from the Logpoint instance.</p>
+  </section>
+</section>
+<section class="detail" id="logpoint_repos/1">
+
+  <div class="detail-header">
+    <a href="#logpoint_repos/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">logpoint_repos(credentials)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> logpoint_repos(<a href="#t:credentials/0">credentials</a>()) :: {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Get logpoint repositories from the instance.</p>
+  </section>
+</section>
+<section class="detail" id="reopen_incidents/2">
+
+  <div class="detail-header">
+    <a href="#reopen_incidents/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">reopen_incidents(credentials, incident_ids)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> reopen_incidents(<a href="#t:credentials/0">credentials</a>(), [<a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()]) ::
+  {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Reopen incidents.</p>
+  </section>
+</section>
+<section class="detail" id="resolve_incidents/2">
+
+  <div class="detail-header">
+    <a href="#resolve_incidents/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">resolve_incidents(credentials, incident_ids)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> resolve_incidents(<a href="#t:credentials/0">credentials</a>(), [<a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()]) ::
+  {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Resolve incidents.</p>
+  </section>
+</section>
+<section class="detail" id="run_search/3">
+
+    <span id="run_search/2"></span>
+
+  <div class="detail-header">
+    <a href="#run_search/3" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">run_search(credentials, query, opts \\ [])</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> run_search(<a href="#t:credentials/0">credentials</a>(), LogpointApi.Query.t(), <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">keyword</a>()) ::
+  {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Run a complete search: submit query, poll for completion, and return results.</p><p>This is a convenience function that combines <a href="#get_search_id/2"><code class="inline">get_search_id/2</code></a> and <a href="#get_search_result/2"><code class="inline">get_search_result/2</code></a>
+with automatic polling until the search completes.</p>
+  </section>
+</section>
+<section class="detail" id="user_preference/1">
+
+  <div class="detail-header">
+    <a href="#user_preference/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">user_preference(credentials)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> user_preference(<a href="#t:credentials/0">credentials</a>()) :: {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Get user preferences from the Logpoint instance.</p>
+  </section>
+</section>
+<section class="detail" id="users/1">
+
+  <div class="detail-header">
+    <a href="#users/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">users(credentials)</h1>
+
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> users(<a href="#t:credentials/0">credentials</a>()) :: {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>()} | {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()}</pre>
+
+      </div>
+
+<p>Get users from the Logpoint instance.</p>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/logpoint/1.0.0" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/logpoint/1.0.0">Hex Preview</a>
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="logpoint.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.38.3) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
