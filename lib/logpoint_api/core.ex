@@ -1,6 +1,8 @@
 defmodule LogpointApi.Core do
   @moduledoc false
 
+  alias LogpointApi.ApiClient
+  alias LogpointApi.ApiClient.LegacyAuth
   alias LogpointApi.Query
 
   @allowed_types [:user_preference, :loginspects, :logpoint_repos, :devices, :livesearches]
@@ -20,9 +22,17 @@ defmodule LogpointApi.Core do
   """
   @spec get_search_logs(credentials(), map()) :: {:ok, map()} | {:error, String.t()}
   def get_search_logs(credentials, request_data) do
-    payload = build_payload(credentials, :query, %{"requestData" => Jason.encode!(request_data)})
-    opts = [verify_ssl: Map.get(credentials, :verify_ssl, false)]
-    make_request(credentials.ip, "/getsearchlogs", :post, payload, :urlencoded, opts)
+    auth = build_legacy_auth(credentials)
+    url = build_url(credentials.ip, "/getsearchlogs")
+
+    # The search API expects requestData to be JSON-encoded in the query params
+    encoded_request_data = %{"requestData" => Jason.encode!(request_data)}
+
+    case ApiClient.post(url, encoded_request_data, auth, :urlencoded) do
+      {:ok, result} -> {:ok, result}
+      {:error, {:http_error, status, body}} -> format_error(status, body)
+      {:error, reason} -> {:error, "HTTP request failed: #{inspect(reason)}"}
+    end
   end
 
   @doc """
@@ -30,9 +40,14 @@ defmodule LogpointApi.Core do
   """
   @spec get_allowed_data(credentials(), atom()) :: {:ok, map()} | {:error, String.t()}
   def get_allowed_data(credentials, type) when type in @allowed_types do
-    payload = build_payload(credentials, :query, %{"type" => Atom.to_string(type)})
-    opts = [verify_ssl: Map.get(credentials, :verify_ssl, false)]
-    make_request(credentials.ip, "/getalloweddata", :post, payload, :urlencoded, opts)
+    auth = build_legacy_auth(credentials)
+    url = build_url(credentials.ip, "/getalloweddata")
+
+    case ApiClient.post(url, %{"type" => Atom.to_string(type)}, auth, :urlencoded) do
+      {:ok, result} -> {:ok, result}
+      {:error, {:http_error, status, body}} -> format_error(status, body)
+      {:error, reason} -> {:error, "HTTP request failed: #{inspect(reason)}"}
+    end
   end
 
   @doc """
@@ -40,9 +55,14 @@ defmodule LogpointApi.Core do
   """
   @spec get_users(credentials()) :: {:ok, map()} | {:error, String.t()}
   def get_users(credentials) do
-    payload = build_payload(credentials, :json)
-    opts = [verify_ssl: Map.get(credentials, :verify_ssl, false)]
-    make_request(credentials.ip, "/get_users", :get, payload, :json, opts)
+    auth = build_legacy_auth(credentials)
+    url = build_url(credentials.ip, "/get_users")
+
+    case ApiClient.get(url, auth) do
+      {:ok, result} -> {:ok, result}
+      {:error, {:http_error, status, body}} -> format_error(status, body)
+      {:error, reason} -> {:error, "HTTP request failed: #{inspect(reason)}"}
+    end
   end
 
   @doc """
@@ -51,9 +71,14 @@ defmodule LogpointApi.Core do
   @spec update_incident_state(credentials(), String.t(), map()) ::
           {:ok, map()} | {:error, String.t()}
   def update_incident_state(credentials, path, request_data) do
-    payload = build_payload(credentials, :json, request_data)
-    opts = [verify_ssl: Map.get(credentials, :verify_ssl, false)]
-    make_request(credentials.ip, path, :post, payload, :json, opts)
+    auth = build_legacy_auth(credentials)
+    url = build_url(credentials.ip, path)
+
+    case ApiClient.post(url, request_data, auth, :json) do
+      {:ok, result} -> {:ok, result}
+      {:error, {:http_error, status, body}} -> format_error(status, body)
+      {:error, reason} -> {:error, "HTTP request failed: #{inspect(reason)}"}
+    end
   end
 
   @doc """
@@ -62,9 +87,14 @@ defmodule LogpointApi.Core do
   @spec get_incident_information(credentials(), String.t(), map()) ::
           {:ok, map()} | {:error, String.t()}
   def get_incident_information(credentials, path, request_data) do
-    payload = build_payload(credentials, :json, request_data)
-    opts = [verify_ssl: Map.get(credentials, :verify_ssl, false)]
-    make_request(credentials.ip, path, :get, payload, :json, opts)
+    auth = build_legacy_auth(credentials)
+    url = build_url(credentials.ip, path)
+
+    case ApiClient.get(url, auth, Jason.decode!(Jason.encode!(request_data))) do
+      {:ok, result} -> {:ok, result}
+      {:error, {:http_error, status, body}} -> format_error(status, body)
+      {:error, reason} -> {:error, "HTTP request failed: #{inspect(reason)}"}
+    end
   end
 
   @doc """
@@ -141,60 +171,25 @@ defmodule LogpointApi.Core do
     end
   end
 
-  defp build_payload(credentials, format, request_data \\ nil) do
-    base_payload = %{
-      "username" => credentials.username,
-      "secret_key" => credentials.secret_key
+  defp build_legacy_auth(credentials) do
+    %LegacyAuth{
+      username: credentials.username,
+      secret_key: credentials.secret_key
     }
-
-    payload =
-      case {format, request_data} do
-        {:query, data} -> Map.merge(base_payload, data)
-        {:json, nil} -> base_payload
-        {:json, data} -> Map.put(base_payload, "requestData", data)
-      end
-
-    case format do
-      :query -> URI.encode_query(payload)
-      :json -> Jason.encode!(payload)
-    end
   end
 
-  defp make_request(ip, path, method, payload, content_type, opts) do
-    url = "https://" <> ip <> path
-    verify_ssl = Keyword.get(opts, :verify_ssl, false)
+  defp build_url(ip, path) do
+    "https://#{ip}#{path}"
+  end
 
-    headers =
-      case content_type do
-        :json -> [{"Content-Type", "application/json"}]
-        :urlencoded -> [{"Content-Type", "application/x-www-form-urlencoded"}]
+  defp format_error(status, body) do
+    error_msg =
+      case body do
+        %{"error" => error} -> "HTTP #{status}: #{error}"
+        parsed when is_map(parsed) -> "HTTP #{status}: #{inspect(parsed)}"
+        binary -> "HTTP #{status}: #{binary}"
       end
 
-    case HTTPoison.request(
-           method,
-           url,
-           payload,
-           headers,
-           if(verify_ssl, do: [recv_timeout: :infinity], else: [hackney: [:insecure], recv_timeout: :infinity])
-         ) do
-      {:ok, %HTTPoison.Response{status_code: status, body: body}} when status in 200..299 ->
-        case Jason.decode(body) do
-          {:ok, parsed} -> {:ok, parsed}
-          {:error, _} -> {:error, "Invalid JSON response"}
-        end
-
-      {:ok, %HTTPoison.Response{status_code: status, body: body}} ->
-        error_msg =
-          case Jason.decode(body) do
-            {:ok, %{"error" => error}} -> "HTTP #{status}: #{error}"
-            {:ok, parsed} when is_map(parsed) -> "HTTP #{status}: #{inspect(parsed)}"
-            _ -> "HTTP #{status}: #{body}"
-          end
-
-        {:error, error_msg}
-
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, "HTTP request failed: #{inspect(reason)}"}
-    end
+    {:error, error_msg}
   end
 end
