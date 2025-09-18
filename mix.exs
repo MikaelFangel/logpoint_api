@@ -29,6 +29,7 @@ defmodule LogpointApi.MixProject do
     [
       {:httpoison, "~> 2.0"},
       {:jason, "~> 1.4"},
+      {:joken, "~> 2.6"},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:styler, "~> 1.2", only: [:dev, :test], runtime: false}
