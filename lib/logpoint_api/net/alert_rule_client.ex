@@ -20,9 +20,9 @@ defmodule LogpointApi.Net.AlertRuleClient do
     Req.new(options)
   end
 
-  def get(req, path, token) do
+  def get(req, path, token, params \\ %{}) do
     req = Req.merge(req, auth: {:bearer, token})
-    Req.get(req, url: path)
+    Req.get(req, url: path, params: params)
   end
 
   def post(req, path, token, body) do
