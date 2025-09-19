@@ -64,7 +64,7 @@ defmodule LogpointApi.Auth.JwtProvider do
     }
 
     with {:ok, _valid_scopes} <- validate_scopes(scopes) do
-      signer = create_signer(credential.secret)
+      signer = create_signer(credential.secret_key)
       generate_and_sign(claims, signer)
     end
   end
