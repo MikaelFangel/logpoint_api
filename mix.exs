@@ -1,7 +1,7 @@
 defmodule LogpointApi.MixProject do
   use Mix.Project
 
-  @version "1.0.3"
+  @version "2.0.0"
   @source_url "https://github.com/MikaelFangel/logpoint_api"
 
   def project do
@@ -27,7 +27,7 @@ defmodule LogpointApi.MixProject do
 
   defp deps do
     [
-      {:httpoison, "~> 2.0"},
+      {:req, "~> 0.5.15"},
       {:jason, "~> 1.4"},
       {:joken, "~> 2.6"},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
