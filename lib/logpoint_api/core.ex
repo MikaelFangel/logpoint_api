@@ -3,6 +3,7 @@ defmodule LogpointApi.Core do
 
   alias LogpointApi.ApiClient
   alias LogpointApi.ApiClient.LegacyAuth
+  alias LogpointApi.Credentials
   alias LogpointApi.Query
 
   @allowed_types [:user_preference, :loginspects, :logpoint_repos, :devices, :livesearches]
@@ -10,17 +11,12 @@ defmodule LogpointApi.Core do
   @typedoc """
   Credentials for authenticating with the Logpoint API.
   """
-  @type credentials :: %{
-          ip: String.t(),
-          username: String.t(),
-          secret_key: String.t(),
-          verify_ssl: boolean()
-        }
+  @type credentials :: Credentials.t()
 
   @doc """
   Performs search log operations (both search creation and result retrieval).
   """
-  @spec get_search_logs(credentials(), map()) :: {:ok, map()} | {:error, String.t()}
+  @spec get_search_logs(Credentials.t(), map()) :: {:ok, map()} | {:error, String.t()}
   def get_search_logs(credentials, request_data) do
     auth = build_legacy_auth(credentials)
     url = build_url(credentials.ip, "/getsearchlogs")
@@ -38,7 +34,7 @@ defmodule LogpointApi.Core do
   @doc """
   Gets allowed data from the Logpoint instance.
   """
-  @spec get_allowed_data(credentials(), atom()) :: {:ok, map()} | {:error, String.t()}
+  @spec get_allowed_data(Credentials.t(), atom()) :: {:ok, map()} | {:error, String.t()}
   def get_allowed_data(credentials, type) when type in @allowed_types do
     auth = build_legacy_auth(credentials)
     url = build_url(credentials.ip, "/getalloweddata")
@@ -53,7 +49,7 @@ defmodule LogpointApi.Core do
   @doc """
   Gets users from the Logpoint instance.
   """
-  @spec get_users(credentials()) :: {:ok, map()} | {:error, String.t()}
+  @spec get_users(Credentials.t()) :: {:ok, map()} | {:error, String.t()}
   def get_users(credentials) do
     auth = build_legacy_auth(credentials)
     url = build_url(credentials.ip, "/get_users")
@@ -68,7 +64,7 @@ defmodule LogpointApi.Core do
   @doc """
   Updates incident state via API call.
   """
-  @spec update_incident_state(credentials(), String.t(), map()) ::
+  @spec update_incident_state(Credentials.t(), String.t(), map()) ::
           {:ok, map()} | {:error, String.t()}
   def update_incident_state(credentials, path, request_data) do
     auth = build_legacy_auth(credentials)
@@ -84,7 +80,7 @@ defmodule LogpointApi.Core do
   @doc """
   Gets incident information via API call.
   """
-  @spec get_incident_information(credentials(), String.t(), map()) ::
+  @spec get_incident_information(Credentials.t(), String.t(), map()) ::
           {:ok, map()} | {:error, String.t()}
   def get_incident_information(credentials, path, request_data) do
     auth = build_legacy_auth(credentials)
@@ -100,7 +96,7 @@ defmodule LogpointApi.Core do
   @doc """
   Polls search results until completion or timeout.
   """
-  @spec poll_search_result(credentials(), String.t(), pos_integer(), pos_integer(), Query.t()) ::
+  @spec poll_search_result(Credentials.t(), String.t(), pos_integer(), pos_integer(), Query.t()) ::
           {:ok, map()} | {:error, String.t()}
   def poll_search_result(credentials, search_id, poll_interval, max_retries, query) do
     do_poll_search_result(credentials, search_id, poll_interval, max_retries, query, 0)
@@ -109,7 +105,7 @@ defmodule LogpointApi.Core do
   @doc """
   Gets specific incident info by struct.
   """
-  @spec get_incident_info(credentials(), map()) :: {:ok, map()} | {:error, String.t()}
+  @spec get_incident_info(Credentials.t(), map()) :: {:ok, map()} | {:error, String.t()}
   def get_incident_info(credentials, %{__struct__: LogpointApi.Incident} = incident) do
     get_incident_information(credentials, "/get_data_from_incident", incident)
   end
@@ -117,7 +113,7 @@ defmodule LogpointApi.Core do
   @doc """
   Gets incident info by action and time range.
   """
-  @spec get_incident_info(credentials(), atom(), map()) :: {:ok, map()} | {:error, String.t()}
+  @spec get_incident_info(Credentials.t(), atom(), map()) :: {:ok, map()} | {:error, String.t()}
   def get_incident_info(credentials, action, %{__struct__: LogpointApi.TimeRange} = time_range) do
     endpoint =
       case action do
@@ -131,7 +127,7 @@ defmodule LogpointApi.Core do
   @doc """
   Updates incidents with specific action.
   """
-  @spec update_incidents(credentials(), atom(), map()) :: {:ok, map()} | {:error, String.t()}
+  @spec update_incidents(Credentials.t(), atom(), map()) :: {:ok, map()} | {:error, String.t()}
   def update_incidents(credentials, action, %{__struct__: LogpointApi.IncidentIDs} = incident_ids) do
     endpoint =
       case action do

@@ -20,12 +20,12 @@ All functions require credentials as the first parameter:
 
 ```elixir
 # Define your credentials
-credentials = %{
-  ip: "127.0.0.1",
-  username: "admin",
-  secret_key: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-  verify_ssl: false  # optional, defaults to false for self-signed certs
-}
+credentials = LogpointApi.Credentials.new(
+  "127.0.0.1",
+  "admin",
+  "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  false  # verify_ssl, optional, defaults to true
+)
 ```
 
 ### Complete Search (Recommended)
@@ -108,23 +108,23 @@ pointApi.Query` struct:
 For servers with self-signed certificates:
 
 ```elixir
-credentials = %{
-  ip: "192.168.1.100",
-  username: "admin", 
-  secret_key: "secret123",
-  verify_ssl: false  # Disables SSL certificate verification
-}
+credentials = LogpointApi.Credentials.new(
+  "192.168.1.100",
+  "admin", 
+  "secret123",
+  false  # Disables SSL certificate verification
+)
 ```
 
 For production servers with valid certificates:
 
 ```elixir
-credentials = %{
-  ip: "logpoint.company.com",
-  username: "admin",
-  secret_key: "secret123",
-  verify_ssl: true  # Enables SSL certificate verification
-}
+credentials = LogpointApi.Credentials.new(
+  "logpoint.company.com",
+  "admin",
+  "secret123",
+  true  # Enables SSL certificate verification (default)
+)
 ```
 
 ## Error Handling
@@ -160,12 +160,12 @@ options = [
 
 ```elixir
 # Setup
-credentials = %{
-  ip: "logpoint.company.com",
-  username: "admin",
-  secret_key: "your_secret_key",
-  verify_ssl: false
-}
+credentials = LogpointApi.Credentials.new(
+  "logpoint.company.com",
+  "admin",
+  "your_secret_key",
+  false  # verify_ssl
+)
 
 # Search for failed logins in the last hour
 query = %LogpointApi.Query{
