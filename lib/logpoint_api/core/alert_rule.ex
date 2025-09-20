@@ -30,4 +30,23 @@ defmodule LogpointApi.Core.AlertRule do
   def deactivate_alert_rules(req, token, ids) when is_list(ids) do
     AlertRuleClient.post(req, "/AlertRules/deactivate_api", token, %{ids: ids})
   end
+
+  def get_alert_notification_by_id(req, token, alert_id, type) when type in [:email, :http] do
+    case type do
+      :email -> AlertRuleClient.get(req, "/pluggables/Notification/EmailNotification/read_api", token, %{id: alert_id})
+      :http -> AlertRuleClient.get(req, "/pluggables/Notification/HTTPNotification/read_api", token, %{id: alert_id})
+    end
+  end
+
+  def update_alert_notifactions(req, token, alert_ids, notification) do
+    # TODO Implement multihead one for email and one for http
+  end
+
+  def list_all_lopoints_with_repos(req, token) do
+    AlertRuleClient.post(req, "/Repo/get_all_searchable_logpoint", token, %{})
+  end
+
+  def list_user_defined_lists(req, token, params \\ %{}) do
+    AlertRuleClient.get(req, "/UserDefinedList/lists_api", token, params)
+  end
 end
