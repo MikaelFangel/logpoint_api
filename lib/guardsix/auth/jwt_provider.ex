@@ -2,6 +2,8 @@ defmodule Guardsix.Auth.JwtProvider do
   @moduledoc false
   use Joken.Config
 
+  alias Guardsix.Error
+
   @valid_scopes ["search:read", "search:write", "logsource:read", "alertrules:write", "alertrules:read"]
 
   @impl Joken.Config
@@ -14,6 +16,7 @@ defmodule Guardsix.Auth.JwtProvider do
   @doc """
   Generate token for alert rule read operations.
   """
+
   def alert_rule_read_token(credential) do
     generate_token(credential, ["alertrules:read"])
   end
@@ -65,7 +68,11 @@ defmodule Guardsix.Auth.JwtProvider do
 
     with {:ok, _valid_scopes} <- validate_scopes(scopes) do
       signer = create_signer(credential.secret_key)
-      generate_and_sign(claims, signer)
+
+      case generate_and_sign(claims, signer) do
+        {:ok, token, claims} -> {:ok, token, claims}
+        {:error, reason} -> {:error, %Error.Auth{message: "could not sign the token: #{inspect(reason)}"}}
+      end
     end
   end
 
@@ -74,7 +81,7 @@ defmodule Guardsix.Auth.JwtProvider do
 
     case invalid_scopes do
       [] -> {:ok, scopes}
-      invalid -> {:error, "Invalid scopes: #{inspect(invalid)}"}
+      invalid -> {:error, %Error.Auth{message: "invalid scopes: #{inspect(invalid)}"}}
     end
   end
 

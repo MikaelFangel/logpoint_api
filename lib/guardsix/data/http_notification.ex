@@ -7,6 +7,9 @@ defmodule Guardsix.Data.HttpNotification do
   functions to configure the request and auth. Supports `no_auth/1`,
   `api_token_auth/3`, `basic_auth/3`, and `bearer_auth/2`.
   """
+
+  alias Guardsix.Error
+
   @derive {Inspect, except: [:auth]}
   @enforce_keys [:ids, :http_url, :http_request_type]
   defstruct [
@@ -41,16 +44,17 @@ defmodule Guardsix.Data.HttpNotification do
 
   @required_fields [:ids, :http_url, :http_request_type]
 
-  @spec validate(t()) :: :ok | {:error, [String.t()]}
+  @spec validate(t()) :: :ok | {:error, Error.Validation.t()}
   def validate(%__MODULE__{} = notif) do
     errors =
       for field <- @required_fields,
           blank?(Map.get(notif, field)),
-          do: "#{field} is required"
+          into: %{},
+          do: {to_string(field), "is required"}
 
     case errors do
-      [] -> :ok
-      errors -> {:error, errors}
+      empty when map_size(empty) == 0 -> :ok
+      errors -> {:error, Error.Validation.new(errors)}
     end
   end
 
@@ -104,9 +108,6 @@ defmodule Guardsix.Data.HttpNotification do
   @doc """
   Convert an `HttpNotification` struct into the flat map format expected by the Guardsix API.
   """
-  @deprecated "Use to_payload/1 instead"
-  def to_map(notif), do: to_payload(notif)
-
   def to_payload(%__MODULE__{} = notif) do
     %{
       ids: notif.ids,

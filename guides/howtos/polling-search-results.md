@@ -19,7 +19,9 @@ Customize the poll interval and maximum attempts:
 {:ok, result} = Guardsix.run_search(client, query, polling_interval: 2_000, max_attempts: 15)
 ```
 
-Returns `{:error, :max_attempts_exceeded}` if the search doesn't complete in time.
+Returns `{:error, %Guardsix.Error.Timeout{}}` if the search doesn't complete in time. The search
+is not cancelled — the error carries the `search_id`, so you can keep polling it yourself with
+`Search.get_result/2`.
 
 ## Running in the background
 

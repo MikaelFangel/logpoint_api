@@ -7,12 +7,13 @@ defmodule Guardsix.Core.GuardsixRepo do
 
   alias Guardsix.Auth.JwtProvider
   alias Guardsix.Data.Client
+  alias Guardsix.Error
   alias Guardsix.Net.JwtClient
 
   @doc """
   List all searchable repos.
   """
-  @spec list(Client.t()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t()) :: {:ok, map()} | {:error, Error.t()}
   def list(%Client{} = client) do
     case JwtProvider.logsource_read_token(client.credential) do
       {:ok, token, _claims} ->

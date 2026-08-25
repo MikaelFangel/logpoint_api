@@ -6,6 +6,9 @@ defmodule Guardsix.Data.EmailNotification do
   Start with `Guardsix.email_notification/2` and pipe through the builder
   functions to set subject, template, and other options.
   """
+
+  alias Guardsix.Error
+
   @enforce_keys [:ids, :email_emails]
   defstruct [
     :ids,
@@ -41,16 +44,17 @@ defmodule Guardsix.Data.EmailNotification do
 
   @required_fields [:ids, :email_emails, :email_subject, :email_template]
 
-  @spec validate(t()) :: :ok | {:error, [String.t()]}
+  @spec validate(t()) :: :ok | {:error, Error.Validation.t()}
   def validate(%__MODULE__{} = notif) do
     errors =
       for field <- @required_fields,
           blank?(Map.get(notif, field)),
-          do: "#{field} is required"
+          into: %{},
+          do: {to_string(field), "is required"}
 
     case errors do
-      [] -> :ok
-      errors -> {:error, errors}
+      empty when map_size(empty) == 0 -> :ok
+      errors -> {:error, Error.Validation.new(errors)}
     end
   end
 
@@ -85,9 +89,6 @@ defmodule Guardsix.Data.EmailNotification do
   @doc """
   Convert an `EmailNotification` struct into the flat map format expected by the Guardsix API.
   """
-  @deprecated "Use to_payload/1 instead"
-  def to_map(notif), do: to_payload(notif)
-
   def to_payload(%__MODULE__{} = notif) do
     %{
       ids: Jason.encode!(notif.ids),

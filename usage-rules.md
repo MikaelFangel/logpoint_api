@@ -33,11 +33,49 @@ Builder structs live under `Guardsix.Data.*`:
 - `EmailNotification` — email notification builder
 - `HttpNotification` — HTTP notification builder
 
+Errors live under `Guardsix.Error.*`:
+- `Guardsix.Error` — the union type used in every spec; a namespace, not a struct
+- `Guardsix.Error.Validation`, `.API`, `.Auth`, `.Transport`, `.Timeout` — alias `Guardsix.Error` and match `%Error.Validation{}`
+
 Do not use `Guardsix.Net.*` or `Guardsix.Auth.*` directly. These are internal.
 
 ## Return values
 
-All API functions return `{:ok, map()}` or `{:error, term()}`. The ok value is the decoded JSON response from the Guardsix API as a map with string keys.
+All API functions return `{:ok, map()}` or `{:error, Guardsix.Error.t()}`. The ok value is the decoded JSON response from the Guardsix API as a map with string keys.
+
+Errors are one of five exception structs. Match on the struct, not on a field — each carries only what applies to it, so there are no nil fields to guard against:
+
+- `Guardsix.Error.Validation` — the request was invalid, rejected locally or by the API. `errors` is field-keyed and never empty.
+- `Guardsix.Error.API` — Guardsix returned an error for the request. `message`, `status`, `error_code`, `body`.
+- `Guardsix.Error.Auth` — login, token, or scope failure. `message`, `status`.
+- `Guardsix.Error.Transport` — the request did not complete or the response was unreadable. `cause` is the `Req` or `Jason` exception.
+- `Guardsix.Error.Timeout` — a search did not finish within the allowed polls. `attempts`, `search_id`.
+
+All five are exceptions, so `Exception.message/1` works on any of them and `{:error, error}` is always a safe final clause.
+
+```elixir
+case AlertRule.create(client, rule) do
+  {:ok, created} -> created
+  {:error, %Error.Validation{errors: fields}} -> report(fields)
+  {:error, %Error.Transport{}} -> retry()
+  {:error, error} -> Logger.error(Exception.message(error))
+end
+```
+
+`Error.Validation` is the same struct for local and API rejections, so `Rule.validate/1` and a rejected `AlertRule.create/2` are read the same way:
+
+```elixir
+{:error, error} = Rule.validate(rule)
+error.errors  # %{"query" => "is required"}
+
+{:error, error} = AlertRule.create(client, rule)
+error.errors  # %{"name" => "Alertrule with the same name already exists"}
+error.status  # 422
+```
+
+Nested sections of a rule payload are flattened into dotted keys, so a rejected search interval is keyed `"search_params.search_interval_minute"`.
+
+Do not branch on the status alone. A duplicate alert rule name is answered `200` with `success: false`, and a validation failure can be `200` or `422`. Both conventions are handled: anything outside `2xx` is an error, and so is a `2xx` carrying `success: false`. A `2xx` with an empty body (such as a `204`) is `{:ok, %{}}`.
 
 ## Search is asynchronous
 
@@ -58,6 +96,18 @@ For custom polling, use the low-level primitives:
 ```
 
 Poll `get_result/2` until `result["final"] == true`. Handle `result["success"] == false` by resubmitting with `get_id/2` to get a fresh search ID (the search expired server-side).
+
+## Listings are paginated
+
+`AlertRule.list/2`, `UserDefinedList.list/2` and the other `lists_api` endpoints return one page. Omitting `:page` gives you the first page and no indication that there are more, so pass `:limit` and `:page` and page until you have them all.
+
+The response carries `total`, which is how many rules exist rather than how many were returned. Check it: a listing that is short of `total` is a partial answer that looks like a complete one.
+
+```elixir
+{:ok, %{"rows" => rows, "total" => total}} = AlertRule.list(client, %{limit: 200, page: 1})
+```
+
+`return_all_data: true` is unrelated to paging — it asks for every *field* of each rule, not every rule.
 
 ## Alert rule time ranges
 

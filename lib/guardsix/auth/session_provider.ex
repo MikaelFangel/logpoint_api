@@ -9,6 +9,7 @@ defmodule Guardsix.Auth.SessionProvider do
   """
 
   alias Guardsix.Data.Session
+  alias Guardsix.Error
   alias Guardsix.Net.BaseClient
 
   @csrf_pattern ~r/CSRFToken\s*=\s*"([^"]+)"/
@@ -18,7 +19,7 @@ defmodule Guardsix.Auth.SessionProvider do
   @browser_user_agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 
   @spec login(String.t(), String.t(), String.t(), keyword()) ::
-          {:ok, Session.t()} | {:error, term()}
+          {:ok, Session.t()} | {:error, Error.t()}
   @default_auth_method "LogpointAuthentication"
 
   @doc """
@@ -52,15 +53,15 @@ defmodule Guardsix.Auth.SessionProvider do
   defp fetch_page(req) do
     case Req.get(req) do
       {:ok, %{status: 200} = response} -> {:ok, response}
-      {:ok, %{status: status}} -> {:error, "expected HTTP 200, got #{status}"}
-      {:error, error} -> {:error, error}
+      {:ok, %{status: status}} -> {:error, %Error.Auth{message: "expected HTTP 200, got #{status}", status: status}}
+      {:error, exception} -> {:error, %Error.Transport{cause: exception}}
     end
   end
 
   defp extract_csrf_token(body) do
     case Regex.run(@csrf_pattern, body, capture: :all_but_first) do
       [token] -> {:ok, token}
-      nil -> {:error, "CSRF token not found"}
+      nil -> {:error, %Error.Auth{message: "no CSRF token on the landing page"}}
     end
   end
 
@@ -82,16 +83,19 @@ defmodule Guardsix.Auth.SessionProvider do
       {:ok, parse_expires(headers)}
     else
       {:ok, %{"success" => false, "message" => msg}} when msg in ["", nil] ->
-        {:error, "login failed: invalid credentials"}
+        {:error, %Error.Auth{message: "login failed: invalid credentials"}}
 
       {:ok, %{"message" => message}} ->
-        {:error, message}
+        {:error, %Error.Auth{message: message}}
 
       {:ok, %{status: status}} ->
-        {:error, "login failed with status #{status}"}
+        {:error, %Error.Auth{message: "login failed with status #{status}", status: status}}
 
-      _error ->
-        {:error, "failed to parse login response"}
+      {:error, exception} ->
+        {:error, %Error.Transport{cause: exception}}
+
+      _unexpected ->
+        {:error, %Error.Auth{message: "could not parse the login response"}}
     end
   end
 
@@ -121,7 +125,7 @@ defmodule Guardsix.Auth.SessionProvider do
 
   defp attach_session_cookie(req, headers) do
     case find_cookie(headers, @session_pattern) do
-      nil -> {:error, "no session cookie in response"}
+      nil -> {:error, %Error.Auth{message: "no session cookie in the login response"}}
       session -> {:ok, Req.merge(req, headers: [{"cookie", "session=#{session}"}])}
     end
   end

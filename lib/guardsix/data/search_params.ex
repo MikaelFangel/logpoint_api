@@ -32,9 +32,6 @@ defmodule Guardsix.Data.SearchParams do
     }
   end
 
-  @deprecated "Use to_payload/1 instead"
-  def to_form_data(params), do: to_payload(params)
-
   def to_payload(%__MODULE__{} = params) do
     %{
       query: params.query,

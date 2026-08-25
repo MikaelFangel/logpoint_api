@@ -22,23 +22,23 @@ jobs:
       matrix:
         include:
           - otp: "27"
-            elixir: "1.17"
-          - otp: "27"
             elixir: "1.18"
           - otp: "27"
             elixir: "1.19"
           - otp: "28"
             elixir: "1.19"
+          - otp: "29"
+            elixir: "1.20"
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up Elixir
       uses: erlef/setup-beam@v1
       with:
         otp-version: ${{matrix.otp}}
         elixir-version: ${{matrix.elixir}}
     - name: Restore dependencies cache
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: |
           deps
@@ -51,4 +51,3 @@ jobs:
       run: mix deps.get
     - name: Run tests
       run: mix test
-

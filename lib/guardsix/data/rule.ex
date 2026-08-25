@@ -5,6 +5,9 @@ defmodule Guardsix.Data.Rule do
   Start with `Guardsix.rule/1` and pipe through the builder functions
   to set fields. Pass the result to `AlertRule.create/2`.
   """
+
+  alias Guardsix.Error
+
   @enforce_keys [:name]
   defstruct [
     :name,
@@ -77,23 +80,24 @@ defmodule Guardsix.Data.Rule do
     :assignee
   ]
 
-  @spec validate(t()) :: :ok | {:error, [String.t()]}
+  @spec validate(t()) :: :ok | {:error, Error.Validation.t()}
   def validate(%__MODULE__{} = rule) do
     field_errors =
       for field <- @required_fields,
           blank?(Map.get(rule, field)),
-          do: "#{field} is required"
+          into: %{},
+          do: {to_string(field), "is required"}
 
     time_range_errors =
       if blank?(rule.time_range_day) and blank?(rule.time_range_hour) and blank?(rule.time_range_minute) do
-        ["at least one of time_range_day, time_range_hour, or time_range_minute is required"]
+        %{"time_range" => "at least one of time_range_day, time_range_hour, or time_range_minute is required"}
       else
-        []
+        %{}
       end
 
-    case field_errors ++ time_range_errors do
-      [] -> :ok
-      errors -> {:error, errors}
+    case Map.merge(field_errors, time_range_errors) do
+      empty when map_size(empty) == 0 -> :ok
+      errors -> {:error, Error.Validation.new(errors)}
     end
   end
 
@@ -165,9 +169,6 @@ defmodule Guardsix.Data.Rule do
   @doc """
   Convert a `Rule` struct into the nested map format expected by the Guardsix API.
   """
-  @deprecated "Use to_payload/1 instead"
-  def to_map(rule), do: to_payload(rule)
-
   def to_payload(%__MODULE__{} = rule) do
     reject_nil(%{
       name: rule.name,

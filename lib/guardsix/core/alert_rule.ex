@@ -12,6 +12,7 @@ defmodule Guardsix.Core.AlertRule do
   alias Guardsix.Data.EmailNotification
   alias Guardsix.Data.HttpNotification
   alias Guardsix.Data.Rule
+  alias Guardsix.Error
   alias Guardsix.Net.JwtClient
 
   @doc """
@@ -29,7 +30,7 @@ defmodule Guardsix.Core.AlertRule do
       AlertRule.list(client, %{limit: 10, page: 1})
 
   """
-  @spec list(Client.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t(), map()) :: {:ok, map()} | {:error, Error.t()}
   def list(%Client{} = client, params \\ %{}) do
     with_read_token(client, fn token ->
       JwtClient.get(req(client), "/AlertRules/lists_api", token, params)
@@ -39,7 +40,7 @@ defmodule Guardsix.Core.AlertRule do
   @doc """
   Get an alert rule by ID.
   """
-  @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, Error.t()}
   def get(%Client{} = client, id) when is_binary(id) do
     with_read_token(client, fn token ->
       JwtClient.get(req(client), "/AlertRules/read_api", token, %{id: id})
@@ -49,7 +50,7 @@ defmodule Guardsix.Core.AlertRule do
   @doc """
   Create an alert rule.
   """
-  @spec create(Client.t(), Rule.t() | map()) :: {:ok, map()} | {:error, term()}
+  @spec create(Client.t(), Rule.t() | map()) :: {:ok, map()} | {:error, Error.t()}
   def create(%Client{} = client, %Rule{} = rule) do
     with :ok <- Rule.validate(rule) do
       create(client, Rule.to_payload(rule))
@@ -65,7 +66,7 @@ defmodule Guardsix.Core.AlertRule do
   @doc """
   Update an alert rule.
   """
-  @spec update(Client.t(), String.t(), Rule.t() | map()) :: {:ok, map()} | {:error, term()}
+  @spec update(Client.t(), String.t(), Rule.t() | map()) :: {:ok, map()} | {:error, Error.t()}
   def update(%Client{} = client, id, %Rule{} = rule) when is_binary(id) do
     with :ok <- Rule.validate(rule) do
       update(client, id, Rule.to_payload(rule))
@@ -86,7 +87,7 @@ defmodule Guardsix.Core.AlertRule do
     @doc """
     #{function_name |> to_string() |> String.capitalize()} alert rules by IDs.
     """
-    @spec unquote(function_name)(Client.t(), [String.t()]) :: {:ok, map()} | {:error, term()}
+    @spec unquote(function_name)(Client.t(), [String.t()]) :: {:ok, map()} | {:error, Error.t()}
     def unquote(function_name)(%Client{} = client, ids) when is_list(ids) do
       with_write_token(client, fn token ->
         JwtClient.post_json(req(client), "/AlertRules/#{unquote(path)}", token, %{ids: ids})
@@ -98,7 +99,7 @@ defmodule Guardsix.Core.AlertRule do
   Get alert notification by alert ID and type.
   """
   @spec get_notification(Client.t(), String.t(), :email | :http) ::
-          {:ok, map()} | {:error, term()}
+          {:ok, map()} | {:error, Error.t()}
   def get_notification(%Client{} = client, alert_id, type) when type in [:email, :http] do
     path =
       case type do
@@ -115,7 +116,7 @@ defmodule Guardsix.Core.AlertRule do
   Create an email notification for alert rules.
   """
   @spec create_email_notification(Client.t(), EmailNotification.t()) ::
-          {:ok, map()} | {:error, term()}
+          {:ok, map()} | {:error, Error.t()}
   def create_email_notification(%Client{} = client, %EmailNotification{} = notif) do
     with :ok <- EmailNotification.validate(notif) do
       body = Map.put(EmailNotification.to_payload(notif), :type, "email")
@@ -132,7 +133,7 @@ defmodule Guardsix.Core.AlertRule do
   end
 
   @spec create_email_notification(Client.t(), [String.t()], map()) ::
-          {:ok, map()} | {:error, term()}
+          {:ok, map()} | {:error, Error.t()}
   def create_email_notification(%Client{} = client, ids, params) when is_list(ids) and is_map(params) do
     body = Map.merge(params, %{ids: ids, type: "email"})
 
@@ -150,7 +151,7 @@ defmodule Guardsix.Core.AlertRule do
   Create an HTTP notification for alert rules.
   """
   @spec create_http_notification(Client.t(), HttpNotification.t()) ::
-          {:ok, map()} | {:error, term()}
+          {:ok, map()} | {:error, Error.t()}
   def create_http_notification(%Client{} = client, %HttpNotification{} = notif) do
     with :ok <- HttpNotification.validate(notif) do
       body = Map.put(HttpNotification.to_payload(notif), :type, "http")
@@ -167,7 +168,7 @@ defmodule Guardsix.Core.AlertRule do
   end
 
   @spec create_http_notification(Client.t(), [String.t()], map()) ::
-          {:ok, map()} | {:error, term()}
+          {:ok, map()} | {:error, Error.t()}
   def create_http_notification(%Client{} = client, ids, params) when is_list(ids) and is_map(params) do
     body = Map.merge(params, %{ids: ids, type: "http"})
 

@@ -19,14 +19,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: "1.19"
-          otp-version: "28"
+          elixir-version: "1.20"
+          otp-version: "29"
       - name: Restore dependencies cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: cache-deps
         with:
           path: |
@@ -47,5 +47,5 @@ jobs:
         run: mix credo
       - name: Hex audit
         run: mix hex.audit
-      - name: Deps audit 
+      - name: Deps audit
         run: mix hex.audit

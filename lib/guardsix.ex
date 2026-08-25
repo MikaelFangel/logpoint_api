@@ -110,6 +110,7 @@ defmodule Guardsix do
   alias Guardsix.Data.HttpNotification
   alias Guardsix.Data.Rule
   alias Guardsix.Data.SearchParams
+  alias Guardsix.Error
   alias Guardsix.Net.BaseClient
 
   @js_version_pattern ~r/JS_VERSION\s*=\s*"([^"]+)"/
@@ -133,7 +134,7 @@ defmodule Guardsix do
       {:ok, "7.7.1.0_1766842968"} = Guardsix.version("https://guardsix.example.com", format: :long)
 
   """
-  @spec version(String.t(), keyword()) :: {:ok, String.t()} | {:error, term()}
+  @spec version(String.t(), keyword()) :: {:ok, String.t()} | {:error, Error.t()}
   def version(base_url, opts \\ []) do
     format = Keyword.get(opts, :format, :short)
 
@@ -155,7 +156,7 @@ defmodule Guardsix do
       {:ok, false} = Guardsix.debug?("https://guardsix.example.com")
 
   """
-  @spec debug?(String.t(), keyword()) :: {:ok, boolean()} | {:error, term()}
+  @spec debug?(String.t(), keyword()) :: {:ok, boolean()} | {:error, Error.t()}
   def debug?(base_url, opts \\ []) do
     case scrape_landing_page(base_url, @is_debug_pattern, opts) do
       {:ok, debug_flag} -> {:ok, String.downcase(debug_flag) == "true"}
@@ -175,7 +176,7 @@ defmodule Guardsix do
       {:ok, "LogpointAuthentication"} = Guardsix.default_auth("https://guardsix.example.com")
 
   """
-  @spec default_auth(String.t(), keyword()) :: {:ok, String.t()} | {:error, term()}
+  @spec default_auth(String.t(), keyword()) :: {:ok, String.t()} | {:error, Error.t()}
   def default_auth(base_url, opts \\ []) do
     case scrape_landing_page(base_url, @default_auth_pattern, opts) do
       {:ok, auth} -> {:ok, auth}
@@ -195,7 +196,7 @@ defmodule Guardsix do
       {:ok, false} = Guardsix.failover?("https://guardsix.example.com")
 
   """
-  @spec failover?(String.t(), keyword()) :: {:ok, boolean()} | {:error, term()}
+  @spec failover?(String.t(), keyword()) :: {:ok, boolean()} | {:error, Error.t()}
   def failover?(base_url, opts \\ []) do
     case scrape_landing_page(base_url, @failover_pattern, opts) do
       {:ok, failover_flag} -> {:ok, String.downcase(failover_flag) == "true"}
@@ -211,9 +212,9 @@ defmodule Guardsix do
          [_, value] <- Regex.run(pattern, body) do
       {:ok, value}
     else
-      {:ok, %{status: status}} -> {:error, "expected HTTP 200, got #{status}"}
-      {:error, error} -> {:error, error}
-      nil -> {:error, "not found in response"}
+      {:ok, %{status: status}} -> {:error, %Error.API{message: "expected HTTP 200, got #{status}", status: status}}
+      {:error, exception} -> {:error, %Error.Transport{cause: exception}}
+      nil -> {:error, %Error.API{message: "the landing page did not contain the requested value"}}
     end
   end
 
@@ -244,7 +245,7 @@ defmodule Guardsix do
 
   """
   @spec session(String.t(), String.t(), String.t(), keyword()) ::
-          {:ok, Guardsix.Data.Session.t()} | {:error, term()}
+          {:ok, Guardsix.Data.Session.t()} | {:error, Error.t()}
   def session(base_url, username, password, opts \\ []) do
     Guardsix.Auth.SessionProvider.login(base_url, username, password, opts)
   end
@@ -292,7 +293,7 @@ defmodule Guardsix do
     * `:max_attempts`     — maximum poll iterations (default: `30`)
 
   """
-  @spec run_search(Client.t(), SearchParams.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  @spec run_search(Client.t(), SearchParams.t(), keyword()) :: {:ok, map()} | {:error, Error.t()}
   def run_search(%Client{} = client, %SearchParams{} = query, opts \\ []) do
     SearchRunner.run(client, query, opts)
   end

@@ -1,7 +1,7 @@
 defmodule Guardsix.MixProject do
   use Mix.Project
 
-  @version "1.2.3"
+  @version "2.0.0"
   @source_url "https://github.com/MikaelFangel/guardsix"
 
   def project do
@@ -71,6 +71,16 @@ defmodule Guardsix.MixProject do
       ],
       groups_for_extras: [
         "How-To": ~r/guides\/howtos\/.*/
+      ],
+      groups_for_modules: [
+        Errors: [
+          Guardsix.Error,
+          Guardsix.Error.API,
+          Guardsix.Error.Auth,
+          Guardsix.Error.Timeout,
+          Guardsix.Error.Transport,
+          Guardsix.Error.Validation
+        ]
       ]
     ]
   end

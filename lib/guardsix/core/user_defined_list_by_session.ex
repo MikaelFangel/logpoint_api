@@ -10,6 +10,7 @@ defmodule Guardsix.Core.UserDefinedListBySession do
   """
 
   alias Guardsix.Data.Session
+  alias Guardsix.Error
   alias Guardsix.Net.BaseClient
 
   @doc """
@@ -21,7 +22,7 @@ defmodule Guardsix.Core.UserDefinedListBySession do
       UserDefinedListSession.extract(session, "69c1119e549c866b966d0959")
 
   """
-  @spec extract(Session.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec extract(Session.t(), String.t()) :: {:ok, map()} | {:error, Error.t()}
   def extract(%Session{} = session, id) when is_binary(id) do
     with true <- not Session.expired?(session),
          {:ok, %{"data" => _data}} = response <-
@@ -31,13 +32,13 @@ defmodule Guardsix.Core.UserDefinedListBySession do
       response
     else
       {:ok, response} ->
-        {:error, {:unexpected_response, response}}
+        {:error, %Error.API{message: "the response did not contain list data", body: response}}
 
       false ->
-        {:error, :session_expired}
+        {:error, %Error.Auth{message: "the session has expired"}}
 
-      _error ->
-        {:error, :unknown_error}
+      {:error, _} = error ->
+        error
     end
   end
 
@@ -52,7 +53,7 @@ defmodule Guardsix.Core.UserDefinedListBySession do
       UserDefinedListSession.update_static(session, "69c1...", ["val1", "val2"])
 
   """
-  @spec update_static(Session.t(), String.t(), [String.t()]) :: {:ok, map()} | {:error, term()}
+  @spec update_static(Session.t(), String.t(), [String.t()]) :: {:ok, map()} | {:error, Error.t()}
   def update_static(%Session{} = session, id, values) when is_binary(id) and is_list(values) do
     case extract(session, id) do
       {:ok, %{"data" => data}} ->
@@ -73,10 +74,10 @@ defmodule Guardsix.Core.UserDefinedListBySession do
       UserDefinedListSession.delete(session, "69c1119e549c866b966d0959")
 
   """
-  @spec delete(Session.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec delete(Session.t(), String.t()) :: {:ok, map()} | {:error, Error.t()}
   def delete(%Session{} = session, id) when is_binary(id) do
     if Session.expired?(session) do
-      {:error, :session_expired}
+      {:error, %Error.Auth{message: "the session has expired"}}
     else
       # id is sent in both the query string and form body to match the LogPoint UI behavior
       BaseClient.decode_response(
@@ -101,7 +102,7 @@ defmodule Guardsix.Core.UserDefinedListBySession do
 
   """
   @spec update_static_by_name(Session.t(), String.t(), [String.t()]) ::
-          {:ok, map()} | {:error, term()}
+          {:ok, map()} | {:error, Error.t()}
   def update_static_by_name(%Session{} = session, name, values) when is_binary(name) and is_list(values) do
     case find_id_by_name(session, name) do
       {:ok, id} -> update_static(session, id, values)
@@ -121,7 +122,7 @@ defmodule Guardsix.Core.UserDefinedListBySession do
       UserDefinedListSession.delete_by_name(session, "MY_LIST")
 
   """
-  @spec delete_by_name(Session.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec delete_by_name(Session.t(), String.t()) :: {:ok, map()} | {:error, Error.t()}
   def delete_by_name(%Session{} = session, name) when is_binary(name) do
     case find_id_by_name(session, name) do
       {:ok, id} -> delete(session, id)
@@ -135,9 +136,10 @@ defmodule Guardsix.Core.UserDefinedListBySession do
          %{"id" => id} <- Enum.find(rows, fn entry -> String.upcase(entry["name"] || "") == String.upcase(name) end) do
       {:ok, id}
     else
-      nil -> {:error, "list not found: #{name}"}
-      false -> {:error, :session_expired}
-      true -> {:error, :unknown_error}
+      nil -> {:error, %Error.API{message: "list not found: #{name}"}}
+      false -> {:error, %Error.Auth{message: "the session has expired"}}
+      {:error, _} = error -> error
+      _unexpected -> {:error, %Error.API{message: "could not read the lists while looking up #{name}"}}
     end
   end
 

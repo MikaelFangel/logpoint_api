@@ -10,6 +10,7 @@ defmodule Guardsix.Core.UserDefinedList do
 
   alias Guardsix.Auth.JwtProvider
   alias Guardsix.Data.Client
+  alias Guardsix.Error
   alias Guardsix.Net.JwtClient
 
   @doc """
@@ -27,7 +28,7 @@ defmodule Guardsix.Core.UserDefinedList do
       UserDefinedList.list(client, %{limit: 25, page: 2})
 
   """
-  @spec list(Client.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t(), map()) :: {:ok, map()} | {:error, Error.t()}
   def list(%Client{} = client, params \\ %{}) do
     with_read_token(client, fn token ->
       JwtClient.get(req(client), "/UserDefinedList/lists_api", token, params)
@@ -37,7 +38,7 @@ defmodule Guardsix.Core.UserDefinedList do
   @doc """
   Import a static list from CSV or TXT content.
   """
-  @spec import_static(Client.t(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec import_static(Client.t(), String.t(), String.t()) :: {:ok, map()} | {:error, Error.t()}
   def import_static(%Client{} = client, name, content) when is_binary(name) and is_binary(content) do
     body = %{
       package_import_name: name,
@@ -61,27 +62,30 @@ defmodule Guardsix.Core.UserDefinedList do
   ## Examples
 
       :ok = UserDefinedList.validate_name("MY_LIST")
-      {:error, _} = UserDefinedList.validate_name("_invalid")
+      {:error, %Error.Validation{errors: %{"name" => _}}} = UserDefinedList.validate_name("_invalid")
 
   """
-  @spec validate_name(String.t()) :: :ok | {:error, String.t()}
+  @spec validate_name(String.t()) :: :ok | {:error, Error.Validation.t()}
   def validate_name(name) when is_binary(name) do
     cond do
       String.length(name) < 2 ->
-        {:error, "name must be at least 2 characters"}
+        name_error("must be at least 2 characters")
 
       String.length(name) > 100 ->
-        {:error, "name must be at most 100 characters"}
+        name_error("must be at most 100 characters")
 
       not Regex.match?(@name_pattern, name) ->
-        {:error,
-         "name must be alphanumeric with hyphens and underscores, " <>
-           "and must not begin or end with whitespace, hyphens, or underscores"}
+        name_error(
+          "must be alphanumeric with hyphens and underscores, " <>
+            "and must not begin or end with whitespace, hyphens, or underscores"
+        )
 
       true ->
         :ok
     end
   end
+
+  defp name_error(complaint), do: {:error, Error.Validation.new(%{"name" => complaint})}
 
   defp with_read_token(%Client{} = client, fun) do
     case JwtProvider.search_read_token(client.credential) do

@@ -13,7 +13,7 @@ the API reference doc.
 ```elixir
 def deps do
   [
-    {:guardsix, "~> 1.0.0"}
+    {:guardsix, "~> 2.0"}
   ]
 end
 ```
@@ -191,19 +191,59 @@ client = Guardsix.client("https://192.168.1.100", "admin", "your_secret_key", ss
 
 ## Error Handling
 
-All functions return `{:ok, result}` or `{:error, reason}` tuples:
+All functions return `{:ok, result}` or `{:error, error}`, where the error is one of five exception structs. Match on the
+struct to tell them apart:
 
 ```elixir
-alias Guardsix.Core.Search
+alias Guardsix.Core.AlertRule
+alias Guardsix.Error
 
-case Search.get_id(client, query) do
-  {:ok, %{"search_id" => search_id}} ->
-    IO.puts("Search started: #{search_id}")
+case AlertRule.create(client, rule) do
+  {:ok, created} ->
+    created
 
-  {:error, reason} ->
-    IO.puts("Search failed: #{inspect(reason)}")
+  {:error, %Error.Validation{errors: fields}} ->
+    IO.puts("rejected: #{inspect(fields)}")
+
+  {:error, %Error.Transport{}} ->
+    retry()
+
+  {:error, error} ->
+    IO.puts(Exception.message(error))
 end
 ```
+
+Each type carries only the fields that apply to it, so there is nothing to nil-check on the fields you match on. All
+five are exceptions, which means `Exception.message/1` works on any of them — the last clause above is a complete
+fallback — and any of them can be raised if you would rather let it crash.
+
+| Error | Returned when | Carries |
+| --- | --- | --- |
+| `Guardsix.Error.Validation` | The request was invalid, rejected here or at the API | `errors`, plus `status` and `body` for API rejections |
+| `Guardsix.Error.API` | Guardsix returned an error for the request | `message`, `status`, `error_code`, `body` |
+| `Guardsix.Error.Auth` | Login, token, or scope failure | `message`, `status` |
+| `Guardsix.Error.Transport` | The request did not complete, or the response was unreadable | `cause` — the `Req` or `Jason` exception |
+| `Guardsix.Error.Timeout` | A search did not finish within the allowed polls | `attempts`, `search_id` |
+
+### Validation errors
+
+`Error.Validation` is the same struct whether the rejection happened here — before anything is sent — or at the API, so
+field complaints are read from the same place either way:
+
+```elixir
+{:error, error} = Rule.validate(rule)
+error.errors  # %{"query" => "is required", "repos" => "is required"}
+
+{:error, error} = AlertRule.create(client, rule)
+error.errors  # %{"name" => "Alertrule with the same name already exists"}
+error.status  # 422
+```
+
+Nested sections of an alert rule payload are flattened into dotted keys, so a rejected search interval is reported under
+`"search_params.search_interval_minute"`.
+
+Do not branch on the status alone: a duplicate alert rule name is answered `200` with `success: false`, and a validation
+failure can be either `200` or `422`.
 
 ## Contributing
 

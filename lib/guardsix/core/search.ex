@@ -8,6 +8,7 @@ defmodule Guardsix.Core.Search do
 
   alias Guardsix.Data.Client
   alias Guardsix.Data.SearchParams
+  alias Guardsix.Error
   alias Guardsix.Net.CredentialClient
 
   @allowed_types [
@@ -23,7 +24,7 @@ defmodule Guardsix.Core.Search do
   @doc """
   Create a search and get its search ID.
   """
-  @spec get_id(Client.t(), SearchParams.t()) :: {:ok, map()} | {:error, term()}
+  @spec get_id(Client.t(), SearchParams.t()) :: {:ok, map()} | {:error, Error.t()}
   def get_id(%Client{} = client, %SearchParams{} = query) do
     body =
       query
@@ -36,7 +37,7 @@ defmodule Guardsix.Core.Search do
   @doc """
   Retrieve the search result for a given search ID.
   """
-  @spec get_result(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec get_result(Client.t(), String.t()) :: {:ok, map()} | {:error, Error.t()}
   def get_result(%Client{} = client, search_id) when is_binary(search_id) do
     body = encode_request_data(%{search_id: search_id})
 
@@ -49,7 +50,7 @@ defmodule Guardsix.Core.Search do
     @doc """
     Get #{name} from the Guardsix instance.
     """
-    @spec unquote(function_name)(Client.t()) :: {:ok, map()} | {:error, term()}
+    @spec unquote(function_name)(Client.t()) :: {:ok, map()} | {:error, Error.t()}
     def unquote(function_name)(%Client{} = client) do
       get_allowed_data(client, unquote(type))
     end
