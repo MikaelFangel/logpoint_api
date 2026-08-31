@@ -22,11 +22,15 @@ defmodule Guardsix.Core.AlertRule do
     * `:limit` - maximum number of rules to return
     * `:page` - page number for pagination
     * `:return_all_data` - when `true`, returns all rule data
+    * `:type` - which rules to list: `:my` (yours and cloned vendor rules),
+                `:vendor` (vendor rules), or `:used` (vendor rules in use).
+                Defaults to `:my` on Guardsix 7.8.5 and prior
 
   ## Examples
 
       AlertRule.list(client)
       AlertRule.list(client, %{limit: 10, page: 1})
+      AlertRule.list(client, %{type: :vendor})
 
   """
   @spec list(Client.t(), map()) :: {:ok, map()} | {:error, term()}

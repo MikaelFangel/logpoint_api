@@ -94,6 +94,7 @@ for building rules.
 alias Guardsix.Core.AlertRule
 
 {:ok, rules} = AlertRule.list(client)
+{:ok, rules} = AlertRule.list(client, %{type: :vendor})
 {:ok, rule}  = AlertRule.get(client, "rule-id")
 {:ok, _}     = AlertRule.activate(client, ["id1", "id2"])
 {:ok, _}     = AlertRule.deactivate(client, ["id1"])
